@@ -78,7 +78,7 @@ def fit_outlier_models(df: pd.DataFrame) -> OutlierArtifacts:
         n_estimators=400,
         contamination=IFOREST_CONTAMINATION,
         random_state=RANDOM_STATE,
-        n_jobs=-1,
+        n_jobs=1,
     )
     iforest.fit(Xs)
 

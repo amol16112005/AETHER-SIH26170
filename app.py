@@ -24,6 +24,7 @@ st.set_page_config(page_title="AETHER · Burn-In Screening", page_icon="🛰", l
 DECISION_COLOR = {"PASS": "#2ecc71", "HOLD": "#f1c40f", "REJECT": "#e74c3c"}
 
 
+@st.cache_resource(show_spinner="Loading screening models…")
 def _ensure_artifacts() -> tuple[pd.DataFrame, object, dict]:
     csv_path = DATA_DIR / "burnin_parts.csv"
     bundle_path = MODELS_DIR / "screening_bundle.joblib"

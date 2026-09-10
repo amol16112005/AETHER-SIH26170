@@ -38,7 +38,7 @@ three-way QA decision a human inspector can read.
 
 ```powershell
 cd C:\Users\amolw\OneDrive\Desktop\pioneers
-python -m pip install -r requirements.txt
+python -m pip install -r requirements-dev.txt
 python scripts\train.py
 python scripts\evaluate.py
 python -m streamlit run app.py
@@ -47,6 +47,18 @@ python -m streamlit run app.py
 First run synthesizes lot-structured burn-in data (ISRO flight data is not public),
 trains on some lots, and scores **unseen lots**. Artifacts from `scripts/train.py`
 are already in `data/` and `models/` so the dashboard opens immediately.
+
+## Public deploy (Streamlit Community Cloud)
+
+The GitHub repo is public: [amol16112005/AETHER-SIH26170](https://github.com/amol16112005/AETHER-SIH26170).
+
+1. Open [share.streamlit.io/deploy](https://share.streamlit.io/deploy) and sign in with GitHub.
+2. Repository: `amol16112005/AETHER-SIH26170`
+3. Branch: `main`
+4. Main file path: `app.py`
+5. Optional App URL: `aether-sih26170` → `https://aether-sih26170.streamlit.app`
+6. Advanced settings: Python **3.12**
+7. Click **Deploy**. Apps default to public once they are live; use **Share → Make this app public** if asked.
 
 ## Held-out lot results
 
