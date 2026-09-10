@@ -1,0 +1,147 @@
+{
+  "thresholds": {
+    "hold": 0.40084332010731677,
+    "reject": 0.6830095624646695
+  },
+  "train": {
+    "n": 2478,
+    "defectives": 205,
+    "tp": 205,
+    "fp": 218,
+    "tn": 2055,
+    "fn": 0,
+    "precision": 0.4846335697399527,
+    "recall": 1.0,
+    "f1": 0.6528662420382165,
+    "fn_rate": 0.0,
+    "latent_total": 205,
+    "latent_caught": 205,
+    "latent_catch_rate": 1.0,
+    "static_24h_missed_defectives": 205,
+    "hours_saved_total": 18144,
+    "early_rejects": 126,
+    "holds": 297,
+    "passes": 2055,
+    "reject_precision": 1.0
+  },
+  "val": {
+    "n": 1218,
+    "defectives": 94,
+    "tp": 94,
+    "fp": 142,
+    "tn": 982,
+    "fn": 0,
+    "precision": 0.3983050847457627,
+    "recall": 1.0,
+    "f1": 0.5696969696969697,
+    "fn_rate": 0.0,
+    "latent_total": 94,
+    "latent_caught": 94,
+    "latent_catch_rate": 1.0,
+    "static_24h_missed_defectives": 94,
+    "hours_saved_total": 9504,
+    "early_rejects": 66,
+    "holds": 170,
+    "passes": 982,
+    "reject_precision": 1.0
+  },
+  "test": {
+    "n": 1449,
+    "defectives": 102,
+    "tp": 102,
+    "fp": 175,
+    "tn": 1172,
+    "fn": 0,
+    "precision": 0.36823104693140796,
+    "recall": 1.0,
+    "f1": 0.5382585751978892,
+    "fn_rate": 0.0,
+    "latent_total": 102,
+    "latent_caught": 102,
+    "latent_catch_rate": 1.0,
+    "static_24h_missed_defectives": 102,
+    "hours_saved_total": 10800,
+    "early_rejects": 75,
+    "holds": 202,
+    "passes": 1172,
+    "reject_precision": 0.9866666666666667
+  },
+  "drift_val": {
+    "iddq_mae": 0.4703749655351421,
+    "iddq_extrap_mae": 1.1790071727851248,
+    "iddq_mae_healthy": 0.3340941024037654,
+    "ileak_mae": 0.30076540795136747,
+    "ileak_extrap_mae": 0.704138749131053,
+    "ileak_mae_healthy": 0.22953499037307934,
+    "tpd_mae": 0.0652589630610372,
+    "tpd_extrap_mae": 0.18850677337917843,
+    "tpd_mae_healthy": 0.04893800562425194
+  },
+  "drift_test": {
+    "iddq_mae": 0.5066035965188586,
+    "iddq_extrap_mae": 1.2588150723279052,
+    "iddq_mae_healthy": 0.3386141326264414,
+    "ileak_mae": 0.3055969760784967,
+    "ileak_extrap_mae": 0.7241199478181946,
+    "ileak_mae_healthy": 0.2181008831548871,
+    "tpd_mae": 0.06571665357041058,
+    "tpd_extrap_mae": 0.19292793150467558,
+    "tpd_mae_healthy": 0.04921307596200022
+  },
+  "drift_models": {
+    "iddq": {
+      "ridge_mae": 0.61065407759545,
+      "booster_mae": 0.46965752947537087,
+      "blend_mae": 0.4703749655351421,
+      "blend_weight": 0.7,
+      "safety_slope": 0.0059081632801340975
+    },
+    "ileak": {
+      "ridge_mae": 0.42988395463075546,
+      "booster_mae": 0.2996793328798377,
+      "blend_mae": 0.30076540795136747,
+      "blend_weight": 0.7,
+      "safety_slope": 0.005397237349413551
+    },
+    "tpd": {
+      "ridge_mae": 0.08485441058299412,
+      "booster_mae": 0.06464876051114996,
+      "blend_mae": 0.0652589630610372,
+      "blend_weight": 0.7,
+      "safety_slope": 0.001083789597708063
+    }
+  },
+  "splits": {
+    "train_lots": [
+      "LOT04",
+      "LOT06",
+      "LOT08",
+      "LOT11",
+      "LOT15",
+      "LOT16",
+      "LOT18",
+      "LOT19",
+      "LOT21",
+      "LOT22",
+      "LOT23",
+      "LOTSIH"
+    ],
+    "val_lots": [
+      "LOT02",
+      "LOT03",
+      "LOT05",
+      "LOT07",
+      "LOT13",
+      "LOT20"
+    ],
+    "test_lots": [
+      "LOT01",
+      "LOT09",
+      "LOT10",
+      "LOT12",
+      "LOT14",
+      "LOT17",
+      "LOT24"
+    ]
+  }
+}
