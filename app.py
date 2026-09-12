@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sys
+import textwrap
 from pathlib import Path
 
 import pandas as pd
@@ -61,6 +62,20 @@ def _ensure_artifacts() -> tuple[pd.DataFrame, object, dict]:
 
 def _kpi(label: str, value: str, help_text: str) -> None:
     st.metric(label, value, help=help_text)
+
+
+def _dedent_md(text: str) -> str:
+    """Strip the indent of a triple-quoted block nested inside a function.
+
+    Streamlit's markdown follows CommonMark: four leading spaces make a code
+    fence, so an indented string would otherwise show as source instead of
+    headings and paragraphs.
+    """
+    return textwrap.dedent(text).strip()
+
+
+def _md(text: str) -> None:
+    st.markdown(_dedent_md(text))
 
 
 def _waterfall(pcard: dict) -> go.Figure:
@@ -397,7 +412,7 @@ def main() -> None:
             )
         with r3:
             st.markdown("#### 3. Explainability")
-            st.markdown(
+            _md(
                 """
                 Every call is justified in inspector English:
 
@@ -418,7 +433,7 @@ def main() -> None:
                 st.markdown(f"- {line}")
 
     with tab_method:
-        st.markdown(
+        _md(
             """
             ### The gap static limits cannot close
 
@@ -430,8 +445,8 @@ def main() -> None:
 
             ### Early reject at 24 h
 
-            Module B never waits for 168 h. It takes `Value_0h` and `Value_24h`,
-            predicts `Value_168h`, and compares the implied slope to the healthy
+            Module B never waits for 168 h. It takes 0 h and 24 h readings,
+            predicts the 168 h value, and compares the implied slope to the healthy
             95th-percentile safety slope learned on training lots. A Ridge model
             stays in the loop so a QA inspector can see *which feature* pushed the
             forecast over the line.
@@ -447,19 +462,19 @@ def main() -> None:
             False negatives are costed 80× higher than false positives during
             threshold calibration. Lots are held out entirely during training so PAT
             statistics and the drift model are not leaking the test process corner.
-
-            Held-out lots used for the numbers on this dashboard:
             """
         )
-        st.code(", ".join(report["splits"]["test_lots"]), language=None)
-        st.json(
-            {
-                "thresholds": report["thresholds"],
-                "test_detection": report["test"],
-                "test_drift_mae": report["drift_test"],
-                "drift_model_blend": report["drift_models"],
-            }
-        )
+        st.markdown("#### Held-out lots used for the numbers on this dashboard")
+        st.write(", ".join(report["splits"]["test_lots"]))
+        with st.expander("Raw evaluation payload"):
+            st.json(
+                {
+                    "thresholds": report["thresholds"],
+                    "test_detection": report["test"],
+                    "test_drift_mae": report["drift_test"],
+                    "drift_model_blend": report["drift_models"],
+                }
+            )
 
 
 if __name__ == "__main__":
