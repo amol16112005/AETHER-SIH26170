@@ -78,6 +78,61 @@ def _md(text: str) -> None:
     st.markdown(_dedent_md(text))
 
 
+def _render_method_results(report: dict) -> None:
+    """Show the evaluation *results* the methodology produced — not the JSON blob."""
+    splits = report["splits"]
+    test_m = report["test"]
+    drift = report["drift_test"]
+    models = report["drift_models"]
+    th = report["thresholds"]
+
+    st.markdown("#### Lot hold-out")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Train lots", len(splits["train_lots"]))
+    c2.metric("Validation lots", len(splits["val_lots"]))
+    c3.metric("Held-out test lots", len(splits["test_lots"]))
+    st.caption("Test lots (never used for PAT stats or the drift fit): " + ", ".join(splits["test_lots"]))
+    st.caption("Train: " + ", ".join(splits["train_lots"]))
+    st.caption("Validation: " + ", ".join(splits["val_lots"]))
+
+    st.markdown("#### Calibrated decision thresholds")
+    t1, t2, t3 = st.columns(3)
+    t1.metric("HOLD if fused score ≥", f"{th['hold']:.2f}")
+    t2.metric("REJECT if fused score ≥", f"{th['reject']:.2f}")
+    t3.metric(
+        "Held-out mix",
+        f"{test_m['passes']} PASS · {test_m['holds']} HOLD · {test_m['early_rejects']} REJECT",
+    )
+    st.caption(
+        f"On {test_m['n']:,} held-out parts, recall is {test_m['recall']:.0%} "
+        f"({test_m['fn']} miss / {test_m['defectives']} defectives). "
+        f"Static datasheet limits at 24 h would miss {test_m['static_24h_missed_defectives']} of them."
+    )
+
+    st.markdown("#### Module B — 168 h forecast vs linear extrapolation")
+    rows = []
+    for param in PARAMS:
+        meta = PARAM_META[param]
+        unit = meta["unit"]
+        m = models[param]
+        w = float(m["blend_weight"])
+        rows.append(
+            {
+                "Parameter": meta["label"],
+                "AETHER MAE": f"{drift[f'{param}_mae']:.3f} {unit}",
+                "Linear extrap MAE": f"{drift[f'{param}_extrap_mae']:.3f} {unit}",
+                "Blend": f"{(1.0 - w):.0%} Ridge + {w:.0%} booster",
+                "Healthy 95th slope": f"{m['safety_slope']:.4f} {unit}/h",
+            }
+        )
+    st.dataframe(pd.DataFrame(rows), hide_index=True, use_container_width=True)
+    st.caption(
+        "MAE is against the 168 h reading the model is not allowed to see at 24 h. "
+        "The booster is blended in only when it beats Ridge on validation lots. "
+        "A predicted slope above 1.5× the healthy 95th-percentile slope is an unsafe-drift flag."
+    )
+
+
 def _waterfall(pcard: dict) -> go.Figure:
     items = pcard["ridge_all"]
     measures = ["absolute"] + ["relative"] * len(items) + ["total"]
@@ -464,17 +519,7 @@ def main() -> None:
             statistics and the drift model are not leaking the test process corner.
             """
         )
-        st.markdown("#### Held-out lots used for the numbers on this dashboard")
-        st.write(", ".join(report["splits"]["test_lots"]))
-        with st.expander("Raw evaluation payload"):
-            st.json(
-                {
-                    "thresholds": report["thresholds"],
-                    "test_detection": report["test"],
-                    "test_drift_mae": report["drift_test"],
-                    "drift_model_blend": report["drift_models"],
-                }
-            )
+        _render_method_results(report)
 
 
 if __name__ == "__main__":
