@@ -96,15 +96,19 @@ def _render_method_results(report: dict) -> None:
     st.caption("Validation: " + ", ".join(splits["val_lots"]))
 
     st.markdown("#### Calibrated decision thresholds")
-    t1, t2, t3 = st.columns(3)
-    t1.metric("HOLD if fused score ≥", f"{th['hold']:.2f}")
-    t2.metric("REJECT if fused score ≥", f"{th['reject']:.2f}")
-    t3.metric(
-        "Held-out mix",
-        f"{test_m['passes']} PASS · {test_m['holds']} HOLD · {test_m['early_rejects']} REJECT",
-    )
+    t1, t2 = st.columns(2)
+    t1.metric("HOLD threshold", f"≥ {th['hold']:.2f}")
+    t2.metric("REJECT threshold", f"≥ {th['reject']:.2f}")
+    st.caption("Fused score cutoffs from FN-heavy calibration. Below HOLD is a clean PASS.")
+
+    st.markdown("#### Held-out decisions")
+    d1, d2, d3, d4 = st.columns(4)
+    d1.metric("Parts", f"{test_m['n']:,}")
+    d2.metric("PASS", f"{test_m['passes']:,}")
+    d3.metric("HOLD", f"{test_m['holds']:,}")
+    d4.metric("REJECT", f"{test_m['early_rejects']:,}")
     st.caption(
-        f"On {test_m['n']:,} held-out parts, recall is {test_m['recall']:.0%} "
+        f"Recall {test_m['recall']:.0%} "
         f"({test_m['fn']} miss / {test_m['defectives']} defectives). "
         f"Static datasheet limits at 24 h would miss {test_m['static_24h_missed_defectives']} of them."
     )
