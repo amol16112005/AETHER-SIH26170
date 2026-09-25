@@ -23,10 +23,12 @@ from src.explain import explain_part
 from src.generate_data import save_dataset
 from src.live_screen import (
     NOMINAL_HEALTHY,
+    REQUIRED_MEASURES,
     TEXTBOOK_MAVERICK,
     LiveScreenError,
     blank_frame,
     complete_rows,
+    for_editor,
     parse_live_upload,
     screen_lot,
     screen_one_part,
@@ -39,6 +41,24 @@ from src.pipeline import apply_models, load_bundle, save_bundle, train_bundle
 st.set_page_config(page_title="AETHER · Burn-In Screening", page_icon="🛰", layout="wide")
 
 DECISION_COLOR = {"PASS": "#2ecc71", "HOLD": "#f1c40f", "REJECT": "#e74c3c"}
+
+
+def _wide(**extra) -> dict:
+    """Layout kwargs that work on Streamlit 1.38 (Render) and 1.50+."""
+    try:
+        import inspect
+        if "width" in inspect.signature(st.dataframe).parameters:
+            return {"width": "stretch", **extra}
+    except (TypeError, ValueError):
+        pass
+    return {"use_container_width": True, **extra}
+
+
+def _chart(fig, **kwargs):
+    try:
+        return st.plotly_chart(fig, width="stretch", **kwargs)
+    except TypeError:
+        return st.plotly_chart(fig, use_container_width=True, **kwargs)
 _PLOT_STYLE = dict(
     paper_bgcolor="rgba(0,0,0,0)",
     plot_bgcolor="rgba(21,27,46,0.6)",
@@ -170,7 +190,7 @@ def _render_method_results(report: dict) -> None:
                 "Healthy 95th slope": f"{m['safety_slope']:.4f} {unit}/h",
             }
         )
-    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+    st.dataframe(pd.DataFrame(rows), hide_index=True, **_wide())
     st.caption(
         "MAE is against the 168 h reading the model is not allowed to see at 24 h. "
         "The booster is blended in only when it beats Ridge on validation lots. "
@@ -425,7 +445,7 @@ def _part_card(
     g1, g2, g3 = st.columns(3)
     for col, param in zip((g1, g2, g3), PARAMS):
         with col:
-            st.plotly_chart(_series_figure(row, param), width="stretch")
+            _chart(_series_figure(row, param))
 
     st.markdown("#### Why the 168 h forecast looks like this (Ridge waterfall — not a black box)")
     pcols = st.columns(3)
@@ -437,7 +457,7 @@ def _part_card(
                 f"pred 168 h {pcard['pred_168']:.3f}"
                 + (f"  (actual {pcard['actual_168']:.3f})" if pcard["actual_168"] is not None else "")
             )
-            st.plotly_chart(_waterfall(pcard), width="stretch")
+            _chart(_waterfall(pcard))
 
     st.markdown("#### Inspector brief (copy into the lot traveller)")
     st.code(card["inspector_brief"], language=None)
@@ -491,11 +511,11 @@ def _render_live_results(result: pd.DataFrame, bundle: object, param_sel: str, i
 
     col_a, col_b = st.columns([1, 2])
     with col_a:
-        st.plotly_chart(_decision_pie(result), width="stretch")
+        _chart(_decision_pie(result))
         st.caption("PASS = finish 168 h · HOLD = extra 96 h readout · REJECT = pull now.")
     with col_b:
         st.markdown("#### Lot scatter (0 h vs 24 h)")
-        st.plotly_chart(_lot_scatter(result, param_sel), width="stretch")
+        _chart(_lot_scatter(result, param_sel))
         st.caption(
             f"Each point is one part. X is {PARAM_META[param_sel]['label']} at 0 h, "
             f"Y is the same parameter at 24 h, colored by the decision."
@@ -508,7 +528,7 @@ def _render_live_results(result: pd.DataFrame, bundle: object, param_sel: str, i
         cols = st.columns(len(later_plots))
         for col, (hour, fig) in zip(cols, later_plots):
             with col:
-                st.plotly_chart(fig, width="stretch")
+                _chart(fig)
         st.caption(
             "These points are only a comparison. PASS / HOLD / REJECT was decided from 0 h and 24 h."
         )
@@ -516,9 +536,9 @@ def _render_live_results(result: pd.DataFrame, bundle: object, param_sel: str, i
     ranked = result.sort_values("fused_score", ascending=False)
     st.dataframe(
         ranked[["part_id", "lot_id", "decision", "decision_reason"]],
-        width="stretch",
         hide_index=True,
         height=320,
+        **_wide(),
     )
     st.download_button(
         "Download the scored CSV",
@@ -559,46 +579,71 @@ def _live_lot_editor(bundle: object, param_sel: str, iforest_range: tuple[float,
         )
     with top[2]:
         if st.button("Load example lot (25 parts, one maverick)", key="live_load_example"):
-            st.session_state.live_lot_df = template_frame()
+            st.session_state.live_lot_df = for_editor(template_frame())
             st.session_state.live_editor_n = int(st.session_state.get("live_editor_n", 0)) + 1
+            st.session_state.live_score_now = True
 
     if "live_lot_df" not in st.session_state:
-        st.session_state.live_lot_df = blank_frame(6)
+        st.session_state.live_lot_df = for_editor(blank_frame(6))
 
     if uploaded is not None:
         file_id = f"{uploaded.name}-{uploaded.size}"
         if st.session_state.get("live_csv_id") != file_id:
             try:
-                st.session_state.live_lot_df = parse_live_upload(uploaded.getvalue())
+                st.session_state.live_lot_df = for_editor(parse_live_upload(uploaded.getvalue()))
                 st.session_state.live_csv_id = file_id
                 st.session_state.live_editor_n = int(st.session_state.get("live_editor_n", 0)) + 1
+                st.session_state.live_score_now = True
             except LiveScreenError as exc:
                 st.error(str(exc))
 
-    st.markdown("Edit cells directly. Add or delete rows in the table. Required: 0 h and 24 h for all three parameters.")
-    edited = st.data_editor(
-        st.session_state.live_lot_df,
-        num_rows="dynamic",
-        width="stretch",
-        hide_index=True,
-        key=f"live_editor_{st.session_state.get('live_editor_n', 0)}",
-    )
+    st.markdown("Edit cells directly. Required: 0 h and 24 h for IDDQ, leakage, and tpd.")
+    number_cols = {
+        col: st.column_config.NumberColumn(col, format="%.3f") for col in REQUIRED_MEASURES
+    }
     try:
-        live_rows = complete_rows(edited)
-    except LiveScreenError as exc:
-        st.info(str(exc))
+        edited = st.data_editor(
+            for_editor(st.session_state.live_lot_df),
+            num_rows="dynamic",
+            hide_index=True,
+            column_config=number_cols,
+            key=f"live_editor_{st.session_state.get('live_editor_n', 0)}",
+            **_wide(),
+        )
+    except TypeError:
+        edited = st.data_editor(
+            for_editor(st.session_state.live_lot_df),
+            num_rows="dynamic",
+            hide_index=True,
+            key=f"live_editor_{st.session_state.get('live_editor_n', 0)}",
+            use_container_width=True,
+        )
+    except Exception as exc:
+        st.error(f"The editor could not draw this table: {exc}")
         return
-    if live_rows.empty:
-        st.info("Fill 0 h and 24 h for at least two parts in the same lot, or click **Load example lot**.")
+    st.session_state.live_lot_df = for_editor(edited)
+
+    score_clicked = st.button("Score this lot", type="primary", key="live_score_btn")
+    if score_clicked:
+        st.session_state.live_score_now = True
+    if not st.session_state.get("live_score_now"):
+        st.info("Load the example lot, upload a CSV, or fill the table, then click **Score this lot**.")
         return
     try:
+        live_rows = complete_rows(st.session_state.live_lot_df)
+        if live_rows.empty:
+            st.info("Fill 0 h and 24 h for at least two parts in the same lot.")
+            return
         result, warnings = screen_lot(live_rows, bundle, iforest_range=iforest_range)
     except LiveScreenError as exc:
         st.error(str(exc))
         return
+    except Exception as exc:
+        st.error(f"Scoring failed: {exc}")
+        return
     for msg in warnings:
         st.warning(msg)
-    st.success(f"Screened {len(result)} part(s) in real time against the loaded AETHER models.")
+    st.success(f"Screened {len(result)} part(s) with the frozen bundle. screening_results.csv was not written.")
     _render_live_results(result, bundle, param_sel, iforest_range, key_prefix="live_lot")
 
 
@@ -752,10 +797,10 @@ def main() -> None:
         _kpi_row(report)
         col_a, col_b = st.columns([1, 2])
         with col_a:
-            st.plotly_chart(_decision_pie(view), width="stretch")
+            _chart(_decision_pie(view))
             st.caption("PASS = no anomaly, finish 168 h · HOLD = extra 96 h readout · REJECT = pull from the chamber now.")
         with col_b:
-            st.plotly_chart(_lot_scatter(view, param_sel), width="stretch")
+            _chart(_lot_scatter(view, param_sel))
 
         show_cols = [
             "part_id",
@@ -774,9 +819,9 @@ def main() -> None:
         ]
         st.dataframe(
             view[show_cols].sort_values("fused_score", ascending=False),
-            width="stretch",
             hide_index=True,
             height=360,
+            **_wide(),
         )
 
     with tab_inspect:

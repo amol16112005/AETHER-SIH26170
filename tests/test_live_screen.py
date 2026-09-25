@@ -19,6 +19,18 @@ from src.module_a import iforest_raw_range
 from src.pipeline import apply_models, enrich, load_bundle
 
 
+def test_editor_table_has_float_columns_not_none():
+    from src.live_screen import blank_frame, for_editor
+
+    blank = for_editor(blank_frame(3))
+    assert blank["iddq_0h"].dtype.kind == "f"
+    assert blank["ileak_24h"].isna().all()
+    dirty = pd.DataFrame({"part_id": ["A"], "lot_id": ["L"], "iddq_0h": ["11.2"], "ileak_24h": [None]})
+    clean = for_editor(dirty)
+    assert clean["iddq_0h"].iloc[0] == pytest.approx(11.2)
+    assert pd.isna(clean["ileak_0h"].iloc[0])
+
+
 def test_template_has_required_columns_and_one_maverick():
     df = template_frame()
     live = complete_rows(df)

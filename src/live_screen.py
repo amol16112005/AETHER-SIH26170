@@ -94,9 +94,22 @@ def blank_frame(n: int = 6) -> pd.DataFrame:
         {
             "part_id": [f"LIVE-{i + 1:04d}" for i in range(n)],
             "lot_id": ["LIVELOT"] * n,
-            **{col: [None] * n for col in REQUIRED_MEASURES},
+            **{col: [float("nan")] * n for col in REQUIRED_MEASURES},
         }
     )
+
+
+def for_editor(df: pd.DataFrame) -> pd.DataFrame:
+    """Numeric table Streamlit's data_editor can serialise (no None object cells)."""
+    work = pd.DataFrame(index=range(0 if df is None else len(df)))
+    if df is None or df.empty:
+        return blank_frame(6)
+    src = df.reset_index(drop=True)
+    work["part_id"] = src["part_id"].astype(str) if "part_id" in src.columns else [f"LIVE-{i + 1:04d}" for i in range(len(src))]
+    work["lot_id"] = src["lot_id"].astype(str) if "lot_id" in src.columns else "LIVELOT"
+    for col in REQUIRED_MEASURES:
+        work[col] = pd.to_numeric(src[col], errors="coerce") if col in src.columns else float("nan")
+    return work
 
 
 def template_csv_bytes() -> bytes:
