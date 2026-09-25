@@ -1,0 +1,307 @@
+{
+  "pipeline": {
+    "file": "pipeline.png",
+    "width": 1598,
+    "height": 716,
+    "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\pipeline.png"
+  },
+  "decision_donut": {
+    "file": "decision_donut.png",
+    "width": 714,
+    "height": 683,
+    "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\decision_donut.png"
+  },
+  "lot_scatter": {
+    "file": "lot_scatter.png",
+    "width": 1528,
+    "height": 913,
+    "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\lot_scatter.png"
+  },
+  "pat_histogram": {
+    "file": "pat_histogram.png",
+    "width": 1492,
+    "height": 769,
+    "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\pat_histogram.png"
+  },
+  "aging_modes": {
+    "file": "aging_modes.png",
+    "width": 1491,
+    "height": 805,
+    "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\aging_modes.png"
+  },
+  "report": {
+    "thresholds": {
+      "hold": 0.40084332010731677,
+      "reject": 0.6830095624646695
+    },
+    "train": {
+      "n": 2478,
+      "defectives": 205,
+      "tp": 205,
+      "fp": 218,
+      "tn": 2055,
+      "fn": 0,
+      "precision": 0.4846335697399527,
+      "recall": 1.0,
+      "f1": 0.6528662420382165,
+      "fn_rate": 0.0,
+      "latent_total": 205,
+      "latent_caught": 205,
+      "latent_catch_rate": 1.0,
+      "static_24h_missed_defectives": 205,
+      "hours_saved_total": 18144,
+      "early_rejects": 126,
+      "holds": 297,
+      "passes": 2055,
+      "reject_precision": 1.0
+    },
+    "val": {
+      "n": 1218,
+      "defectives": 94,
+      "tp": 94,
+      "fp": 142,
+      "tn": 982,
+      "fn": 0,
+      "precision": 0.3983050847457627,
+      "recall": 1.0,
+      "f1": 0.5696969696969697,
+      "fn_rate": 0.0,
+      "latent_total": 94,
+      "latent_caught": 94,
+      "latent_catch_rate": 1.0,
+      "static_24h_missed_defectives": 94,
+      "hours_saved_total": 9504,
+      "early_rejects": 66,
+      "holds": 170,
+      "passes": 982,
+      "reject_precision": 1.0
+    },
+    "test": {
+      "n": 1449,
+      "defectives": 102,
+      "tp": 102,
+      "fp": 175,
+      "tn": 1172,
+      "fn": 0,
+      "precision": 0.36823104693140796,
+      "recall": 1.0,
+      "f1": 0.5382585751978892,
+      "fn_rate": 0.0,
+      "latent_total": 102,
+      "latent_caught": 102,
+      "latent_catch_rate": 1.0,
+      "static_24h_missed_defectives": 102,
+      "hours_saved_total": 10800,
+      "early_rejects": 75,
+      "holds": 202,
+      "passes": 1172,
+      "reject_precision": 0.9866666666666667
+    },
+    "drift_val": {
+      "iddq_mae": 0.4703749655351421,
+      "iddq_extrap_mae": 1.1790071727851248,
+      "iddq_mae_healthy": 0.3340941024037654,
+      "ileak_mae": 0.30076540795136747,
+      "ileak_extrap_mae": 0.704138749131053,
+      "ileak_mae_healthy": 0.22953499037307934,
+      "tpd_mae": 0.0652589630610372,
+      "tpd_extrap_mae": 0.18850677337917843,
+      "tpd_mae_healthy": 0.04893800562425194
+    },
+    "drift_test": {
+      "iddq_mae": 0.5066035965188586,
+      "iddq_extrap_mae": 1.2588150723279052,
+      "iddq_mae_healthy": 0.3386141326264414,
+      "ileak_mae": 0.3055969760784967,
+      "ileak_extrap_mae": 0.7241199478181946,
+      "ileak_mae_healthy": 0.2181008831548871,
+      "tpd_mae": 0.06571665357041058,
+      "tpd_extrap_mae": 0.19292793150467558,
+      "tpd_mae_healthy": 0.04921307596200022
+    },
+    "drift_models": {
+      "iddq": {
+        "ridge_mae": 0.61065407759545,
+        "booster_mae": 0.46965752947537087,
+        "blend_mae": 0.4703749655351421,
+        "blend_weight": 0.7,
+        "safety_slope": 0.0059081632801340975
+      },
+      "ileak": {
+        "ridge_mae": 0.42988395463075546,
+        "booster_mae": 0.2996793328798377,
+        "blend_mae": 0.30076540795136747,
+        "blend_weight": 0.7,
+        "safety_slope": 0.005397237349413551
+      },
+      "tpd": {
+        "ridge_mae": 0.08485441058299412,
+        "booster_mae": 0.06464876051114996,
+        "blend_mae": 0.0652589630610372,
+        "blend_weight": 0.7,
+        "safety_slope": 0.001083789597708063
+      }
+    },
+    "splits": {
+      "train_lots": [
+        "LOT04",
+        "LOT06",
+        "LOT08",
+        "LOT11",
+        "LOT15",
+        "LOT16",
+        "LOT18",
+        "LOT19",
+        "LOT21",
+        "LOT22",
+        "LOT23",
+        "LOTSIH"
+      ],
+      "val_lots": [
+        "LOT02",
+        "LOT03",
+        "LOT05",
+        "LOT07",
+        "LOT13",
+        "LOT20"
+      ],
+      "test_lots": [
+        "LOT01",
+        "LOT09",
+        "LOT10",
+        "LOT12",
+        "LOT14",
+        "LOT17",
+        "LOT24"
+      ]
+    }
+  },
+  "test_counts": {
+    "PASS": 1172,
+    "HOLD": 202,
+    "REJECT": 75
+  },
+  "demo": {
+    "part_id": "LOTSIH-0045",
+    "lot_id": "LOTSIH",
+    "decision": "REJECT",
+    "fused_score": 1.069473564611998,
+    "outlier_score": 0.8894735646119979,
+    "iforest_score": 0.6842101846057083,
+    "mahalanobis_score": 1.0,
+    "hours_saved": 144,
+    "headline": "Recommend REJECT at 24 h \u2014 pull this part from the chamber. Continuing burn-in only occupies a slot.",
+    "inspector_brief": "Part LOTSIH-0045 (lot LOTSIH) \u2192 REJECT. Recommend REJECT at 24 h \u2014 pull this part from the chamber. Continuing burn-in only occupies a slot. Leakage current at 24 h is 45.32 \u00b5A \u2014 35.0 robust \u03c3 above the lot median (10.14 \u00b5A). Datasheet max is 50.00 \u00b5A, so a static screen would miss this maverick. Predicted 168 h Standby current (IDDQ) drift exceeds the healthy 95th-percentile safety slope.",
+    "bullets": [
+      "Leakage current at 24 h is 45.32 \u00b5A \u2014 35.0 robust \u03c3 above the lot median (10.14 \u00b5A). Datasheet max is 50.00 \u00b5A, so a static screen would miss this maverick.",
+      "Predicted 168 h Standby current (IDDQ) drift exceeds the healthy 95th-percentile safety slope.",
+      "Predicted Leakage current at 168 h is 46.63 \u00b5A, above 90% of the datasheet cap (50.00 \u00b5A). Early reject is safer than waiting."
+    ],
+    "static_vs_dynamic": {
+      "static": "PASS",
+      "dynamic": "REJECT",
+      "lines": [
+        "Leakage current: 45.32 \u00b5A vs datasheet 50.00 \u00b5A \u2192 STATIC PASS. Lot median 10.14 \u00b5A, robust z = 35.0 \u2192 lot outlier."
+      ],
+      "is_textbook": true
+    },
+    "ileak_0h": 45.0,
+    "ileak_24h": 45.32,
+    "ileak_96h": 45.9,
+    "ileak_168h": 46.55,
+    "ileak_24h_z": 34.967904745336014,
+    "ileak_24h_median": 10.197296993258565,
+    "pred_ileak_168h": 46.62583413786672
+  },
+  "series": {
+    "iddq": {
+      "file": "series_iddq.png",
+      "width": 1132,
+      "height": 697,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\series_iddq.png"
+    },
+    "ileak": {
+      "file": "series_ileak.png",
+      "width": 1132,
+      "height": 697,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\series_ileak.png"
+    },
+    "tpd": {
+      "file": "series_tpd.png",
+      "width": 1132,
+      "height": 697,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\series_tpd.png"
+    }
+  },
+  "waterfall": {
+    "iddq": {
+      "file": "waterfall_iddq.png",
+      "width": 1277,
+      "height": 736,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\waterfall_iddq.png",
+      "caption": "0 h 13.117 \u00b5A (z=1.63) \u2192 24 h 13.648 (z=1.97) \u2192 pred 168 h 15.610 (actual 14.328)",
+      "ridge_top": [
+        {
+          "feature": "log(24 h)",
+          "contribution": -142.70874879297534
+        },
+        {
+          "feature": "log(0 h)",
+          "contribution": 122.5369647909543
+        },
+        {
+          "feature": "relative change",
+          "contribution": 19.46279013059321
+        }
+      ],
+      "ridge_intercept": 12.48831003634631,
+      "ridge_prediction": 15.641365991014196
+    },
+    "ileak": {
+      "file": "waterfall_ileak.png",
+      "width": 1277,
+      "height": 736,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\waterfall_ileak.png",
+      "caption": "0 h 45.000 \u00b5A (z=33.41) \u2192 24 h 45.320 (z=34.97) \u2192 pred 168 h 46.626 (actual 46.550)",
+      "ridge_top": [
+        {
+          "feature": "log(0 h)",
+          "contribution": 1163.0286791180101
+        },
+        {
+          "feature": "log(24 h)",
+          "contribution": -1159.7308185416557
+        },
+        {
+          "feature": "Leakage @ 0 h",
+          "contribution": 11.681583840581697
+        }
+      ],
+      "ridge_intercept": 11.319123208353291,
+      "ridge_prediction": 47.15498945922411
+    },
+    "tpd": {
+      "file": "waterfall_tpd.png",
+      "width": 1276,
+      "height": 736,
+      "path": "C:\\Users\\amolw\\OneDrive\\Desktop\\pioneers\\docs\\figures\\waterfall_tpd.png",
+      "caption": "0 h 4.266 ns (z=-0.97) \u2192 24 h 4.337 (z=-0.88) \u2192 pred 168 h 4.438 (actual 4.319)",
+      "ridge_top": [
+        {
+          "feature": "log(0 h)",
+          "contribution": -22.963330735014203
+        },
+        {
+          "feature": "log(24 h)",
+          "contribution": 20.985443821113712
+        },
+        {
+          "feature": "relative change",
+          "contribution": 1.8285318794942487
+        }
+      ],
+      "ridge_intercept": 5.181545310967241,
+      "ridge_prediction": 4.544186286385405
+    }
+  }
+}

@@ -74,9 +74,13 @@ def enrich(df: pd.DataFrame, times: tuple[int, ...] = (0, 24)) -> pd.DataFrame:
     return attach_lot_relative(df, stats, times=times)
 
 
-def apply_models(df: pd.DataFrame, bundle: ScreeningBundle) -> pd.DataFrame:
+def apply_models(
+    df: pd.DataFrame,
+    bundle: ScreeningBundle,
+    iforest_range: tuple[float, float] | None = None,
+) -> pd.DataFrame:
     scored = drop_model_outputs(df.copy())
-    outliers = score_outliers(scored, bundle.outlier)
+    outliers = score_outliers(scored, bundle.outlier, iforest_range=iforest_range)
     drift = predict_drift(scored, bundle.drift)
     merged = pd.concat(
         [scored.reset_index(drop=True), outliers.reset_index(drop=True), drift.reset_index(drop=True)],

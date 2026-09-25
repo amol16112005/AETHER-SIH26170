@@ -18,6 +18,26 @@ def test_dedent_md_exposes_headings():
     assert not first.startswith(" ")
 
 
+def test_later_hour_plot_appears_only_when_measured():
+    import pandas as pd
+
+    from app import _measured_vs_predicted
+
+    frame = pd.DataFrame(
+        {
+            "part_id": ["A"],
+            "iddq_0h": [11.0],
+            "pred_iddq_168h": [12.0],
+            "iddq_96h": [float("nan")],
+            "iddq_168h": [float("nan")],
+        }
+    )
+    assert _measured_vs_predicted(frame, "iddq", 96) is None
+    assert _measured_vs_predicted(frame, "iddq", 168) is None
+    frame["iddq_168h"] = 12.4
+    assert _measured_vs_predicted(frame, "iddq", 168) is not None
+
+
 def test_methodology_tab_uses_dedented_markdown():
     from pathlib import Path
 

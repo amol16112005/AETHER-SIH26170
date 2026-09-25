@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google AdSense for blinknbuild.in -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8344542221415125"
+       crossorigin="anonymous"></script>
+
+  <!-- Global site tag (gtag.js) - Google Analytics 4 & Firebase Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LGPNZLC09X"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-LGPNZLC09X', {
+      send_page_view: true,
+      cookie_flags: 'SameSite=None;Secure'
+    });
+
+    // Global Universal Analytics / Firebase Logger Helper
+    window.logFirebaseEvent = function(eventName, params) {
+      params = params || {};
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', eventName, params);
+        }
+        if (window._firebaseAnalytics && window._firebaseLogEvent) {
+          window._firebaseLogEvent(window._firebaseAnalytics, eventName, params);
+        }
+      } catch (err) {
+        console.warn('Analytics log warning:', err);
+      }
+    };
+  </script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyALsy4VQE75XxIZSzAdLC_dZ4-sMkeoUzk",
+      authDomain: "blinknbuild-in.firebaseapp.com",
+      projectId: "blinknbuild-in",
+      storageBucket: "blinknbuild-in.firebasestorage.app",
+      messagingSenderId: "194215256232",
+      appId: "1:194215256232:web:1014848861874d2b5ce29d",
+      measurementId: "G-LGPNZLC09X"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    window._firebaseAnalytics = analytics;
+    window._firebaseLogEvent = logEvent;
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart India Hackathon 2026 (SIH) : All 236 Problem Statements & Master PDF | BlinkNBuild</title>
+  <meta name="description" content="Explore and search all 236 official Smart India Hackathon 2026 Problem Statements. Download the Master Catalogue PDF, official PPT template, and watch video breakdown guides.">
+  <meta name="keywords" content="Smart India Hackathon 2026, SIH 2026, SIH Problem Statements, SIH 2026 PS PDF, SIH PPT Template, AICTE, BlinkNBuild">
+  <link rel="canonical" href="https://blinknbuild.in/sih">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="SIH 2026: All 236 Problem Statements & Master PDF | BlinkNBuild">
+  <meta property="og:description" content="Search all 236 SIH 2026 Problem Statements by Ministry, Theme, or Category. Download the official Master PDF and PPT template.">
+  <meta property="og:image" content="https://blinknbuild.in/Assets/blinknbuild-logo.png">
+  <meta property="og:url" content="https://blinknbuild.in/sih">
+  <meta property="og:type" content="website">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Exo+2:ital,wght@0,300;0,400;0,600;0,700;0,900;1,400&family=JetBrains+Mono:wght@400;600;700&family=Orbitron:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossorigin>
+  <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
+  <link rel="stylesheet" href="/style.css?v=20260908_v3">
+
+  <style>
+    /* Nav Actions Spacing Fix */
+    .nav-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 14px !important;
+    }
+    /* SIH Hub Specific Styles */
+    .sih-hero {
+      padding: 130px 0 var(--sp-12);
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(circle at 50% 20%, rgba(0, 212, 245, 0.08) 0%, rgba(10, 14, 26, 0.95) 75%);
+    }
+    .sih-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      background: rgba(245, 166, 35, 0.12);
+      border: 1px solid rgba(245, 166, 35, 0.35);
+      color: var(--gold-400);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: var(--sp-4);
+    }
+    .sih-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(28px, 5.5vw, 52px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: var(--sp-4);
+      letter-spacing: -0.02em;
+    }
+    .sih-title span {
+      color: var(--cyan-400);
+      text-shadow: 0 0 25px rgba(0, 212, 245, 0.4);
+    }
+    .sih-subtitle {
+      font-size: clamp(15px, 2vw, 18px);
+      color: var(--neutral-800);
+      max-width: 820px;
+      margin: 0 auto var(--sp-8);
+      line-height: 1.6;
+    }
+    .sih-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--sp-4);
+      max-width: 960px;
+      margin: 0 auto var(--sp-8);
+    }
+    .sih-metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      padding: var(--sp-4) var(--sp-5);
+      text-align: center;
+      transition: var(--trans-default);
+    }
+    .sih-metric-card:hover {
+      border-color: var(--cyan-400);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0, 212, 245, 0.15);
+    }
+    .sih-metric-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--cyan-400);
+      margin-bottom: 4px;
+    }
+    .sih-metric-label {
+      font-size: 13px;
+      color: var(--neutral-700);
+      font-family: 'Exo 2', sans-serif;
+    }
+    .sih-cta-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: var(--sp-4);
+      margin-bottom: var(--sp-6);
+    }
+    .btn-download-pdf {
+      background: linear-gradient(135deg, var(--gold-400) 0%, var(--gold-500) 100%);
+      color: #050e2c;
+      font-weight: 700;
+      padding: 14px 28px;
+      font-size: 16px;
+      border-radius: var(--r-md);
+      box-shadow: 0 0 25px rgba(245, 166, 35, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: var(--trans-default);
+    }
+    .btn-download-pdf:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 35px rgba(245, 166, 35, 0.6);
+      color: #000;
+    }
+    
+    .btn-download-compact {
+      background: linear-gradient(135deg, rgba(0, 212, 245, 0.15) 0%, rgba(30, 64, 175, 0.25) 100%);
+      color: #fff;
+      border: 1.5px solid var(--cyan-400);
+      font-weight: 700;
+      padding: 14px 26px;
+      font-size: 15px;
+      border-radius: var(--r-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 212, 245, 0.25);
+      transition: var(--trans-default);
+    }
+    .btn-download-compact:hover {
+      background: var(--cyan-400);
+      color: #050e2c;
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px rgba(0, 212, 245, 0.5);
+    }
+
+    .btn-download-ppt {
+      background: rgba(0, 212, 245, 0.1);
+      color: var(--cyan-400);
+      border: 1px solid var(--cyan-400);
+      font-weight: 600;
+      padding: 14px 26px;
+      font-size: 15px;
+      border-radius: var(--r-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: var(--trans-default);
+    }
+    .btn-download-ppt:hover {
+      background: var(--cyan-400);
+      color: #050e2c;
+      box-shadow: 0 0 25px rgba(0, 212, 245, 0.4);
+      transform: translateY(-3px);
+    }
+
+    /* Video section */
+    .sih-featured-video {
+      background: var(--bg-surface);
+      border: 1.5px solid rgba(0, 212, 245, 0.3);
+      border-radius: var(--r-xl);
+      padding: var(--sp-6);
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: var(--sp-6);
+      align-items: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 245, 0.08);
+      margin-top: var(--sp-6);
+      margin-bottom: var(--sp-8);
+      transition: var(--trans-default);
+    }
+    .sih-featured-video:hover {
+      border-color: var(--cyan-400);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 212, 245, 0.2);
+    }
+    @media (max-width: 900px) {
+      .sih-featured-video {
+        grid-template-columns: 1fr;
+      }
+    }
+    .sih-videos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-6);
+    }
+    @media (max-width: 1024px) {
+      .sih-videos-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 640px) {
+      .sih-videos-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .sih-video-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      padding: var(--sp-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+      transition: var(--trans-default);
+    }
+    .sih-video-card:hover {
+      border-color: var(--cyan-400);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .sih-video-iframe-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      border-radius: var(--r-md);
+      overflow: hidden;
+      background: #000;
+      border: 1px solid var(--border-soft);
+    }
+    .sih-video-iframe-wrap iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 0;
+    }
+
+    /* PS Search Section */
+    .ps-controls {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-xl);
+      padding: var(--sp-6);
+      margin-bottom: var(--sp-8);
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: var(--sp-4);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+    @media (max-width: 900px) {
+      .ps-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+    .ps-search-input {
+      width: 100%;
+      background: var(--neutral-100);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-md);
+      padding: 12px 16px;
+      color: #fff;
+      font-size: 14.5px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: var(--trans-default);
+    }
+    .ps-search-input:focus {
+      border-color: var(--cyan-400);
+      box-shadow: 0 0 12px rgba(0, 212, 245, 0.25);
+    }
+    .ps-select {
+      background: var(--neutral-100);
+      border: 1px solid var(--border-soft);
+      border-radius: var(--r-md);
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 14px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      cursor: pointer;
+    }
+    .ps-select:focus {
+      border-color: var(--cyan-400);
+    }
+
+    /* Problem Statements List */
+    .ps-count-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--sp-4);
+      color: var(--neutral-700);
+      font-size: 14px;
+      font-family: 'Exo 2', sans-serif;
+    }
+    .ps-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--sp-4);
+    }
+    .ps-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--r-lg);
+      padding: var(--sp-6);
+      transition: var(--trans-default);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-3);
+    }
+    .ps-card:hover {
+      border-color: var(--cyan-400);
+      box-shadow: 0 6px 20px rgba(0, 212, 245, 0.1);
+    }
+    .ps-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--sp-3);
+      flex-wrap: wrap;
+    }
+    .ps-code-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(0, 212, 245, 0.1);
+      color: var(--cyan-400);
+      padding: 4px 10px;
+      border-radius: var(--r-sm);
+      border: 1px solid rgba(0, 212, 245, 0.25);
+    }
+    .ps-category-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--r-sm);
+      text-transform: uppercase;
+    }
+    .ps-category-badge.software {
+      background: rgba(0, 212, 245, 0.1);
+      color: var(--cyan-400);
+      border: 1px solid var(--cyan-400);
+    }
+    .ps-category-badge.hardware {
+      background: rgba(245, 166, 35, 0.1);
+      color: var(--gold-400);
+      border: 1px solid var(--gold-400);
+    }
+    .ps-title {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.35;
+    }
+    .ps-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--sp-4);
+      font-size: 13px;
+      color: var(--neutral-700);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--sp-3);
+    }
+    .ps-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ps-meta-item i {
+      color: var(--cyan-400);
+    }
+    .ps-details-toggle {
+      background: none;
+      border: none;
+      color: var(--cyan-400);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 0;
+      text-align: left;
+    }
+    .ps-details-toggle:hover {
+      text-decoration: underline;
+    }
+    .ps-details-body {
+      display: none;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--neutral-800);
+      background: var(--neutral-100);
+      border-radius: var(--r-md);
+      padding: var(--sp-4);
+      border: 1px solid var(--border-subtle);
+      white-space: pre-line;
+    }
+    .ps-details-body.open {
+      display: block;
+    }
+  
+    /* 3-SECOND PROFIT / DWELL-TIME DOWNLOAD MODAL */
+    .download-modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(8, 12, 24, 0.88);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--sp-4);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .download-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .download-modal-card {
+      background: var(--bg-surface);
+      border: 1.5px solid rgba(0, 212, 245, 0.35);
+      border-radius: var(--r-xl);
+      max-width: 540px;
+      width: 100%;
+      padding: var(--sp-6);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 212, 245, 0.18);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-4);
+    }
+    .download-modal-overlay.active .download-modal-card {
+      transform: translateY(0);
+    }
+    .modal-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-server-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan-400);
+      background: rgba(0, 212, 245, 0.1);
+      border: 1px solid rgba(0, 212, 245, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      letter-spacing: 0.5px;
+    }
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--neutral-600);
+      font-size: 26px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 8px;
+      transition: color 0.2s ease;
+    }
+    .modal-close-btn:hover {
+      color: #fff;
+    }
+    .modal-file-box {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--neutral-100);
+      border: 1px solid var(--border-soft);
+      padding: 14px 16px;
+      border-radius: var(--r-lg);
+    }
+    .modal-file-icon {
+      font-size: 32px;
+      color: var(--gold-400);
+      background: rgba(245, 166, 35, 0.12);
+      border: 1px solid rgba(245, 166, 35, 0.35);
+      width: 52px; height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r-md);
+      flex-shrink: 0;
+    }
+    .modal-file-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .modal-file-name {
+      font-family: 'Exo 2', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 3px;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+    .modal-file-meta {
+      font-size: 12px;
+      color: var(--neutral-700);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .modal-timer-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .timer-headline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--neutral-800);
+    }
+    .timer-sec-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold-400);
+      background: rgba(245, 166, 35, 0.15);
+      border: 1px solid rgba(245, 166, 35, 0.35);
+      padding: 2px 10px;
+      border-radius: 4px;
+    }
+    .modal-progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--neutral-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .modal-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--cyan-400), var(--gold-400));
+      transition: width 0.1s linear;
+    }
+    .modal-monetization-card {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(20, 30, 60, 0.9) 100%);
+      border: 1px solid rgba(245, 166, 35, 0.3);
+      border-radius: var(--r-lg);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ad-sponsor-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--gold-400);
+      letter-spacing: 0.5px;
+    }
+    .ad-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .ad-desc {
+      font-size: 12px;
+      color: var(--neutral-700);
+      line-height: 1.45;
+    }
+    .btn-modal-sponsor {
+      align-self: flex-start;
+      margin-top: 4px;
+      background: #ff0000;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: var(--r-sm);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .btn-modal-sponsor:hover {
+      background: #cc0000;
+      transform: translateY(-1px);
+    }
+    .modal-action-row {
+      display: flex;
+      flex-direction: column;
+    }
+    .btn-modal-download {
+      background: var(--cyan-400);
+      color: #000;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: var(--r-md);
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: var(--trans-default);
+      border: none;
+    }
+    .btn-modal-download.disabled {
+      background: var(--neutral-300);
+      color: var(--neutral-700);
+      cursor: not-allowed;
+    }
+    .btn-modal-download.ready {
+      background: #10b981;
+      color: #fff;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.45);
+    }
+    .modal-subtext {
+      font-size: 11.5px;
+      color: var(--neutral-600);
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="/" class="logo-link" id="nav-logo" aria-label="BlinkNBuild Homepage">
+        <img src="/Assets/blinknbuild-logo-180.png" alt="BlinkNBuild Logo" class="logo-img" width="45" height="45">
+        <span class="logo-text">Blink<span>N</span>Build</span>
+      </a>
+
+      <div class="nav-actions" style="display: flex; align-items: center; gap: 14px;">
+        <a href="/" class="btn btn-outline-cyan" style="font-size: 13px; padding: 6px 14px;">
+          <i class="fas fa-home"></i> Home Base
+        </a>
+        <a href="/courses/" class="btn btn-outline-gold" style="font-size: 13px; padding: 6px 14px;">
+          <i class="fas fa-graduation-cap"></i> Academy
+        </a>
+        <a href="/Assets/SIH_2026_All_Problem_Statements_Master_Catalogue.pdf" download class="btn btn-gold btn-download-pdf" style="font-size: 13px; padding: 6px 14px;">
+          <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="sih-hero">
+      <canvas id="hero-canvas"></canvas>
+      <div class="hero-glow-l"></div>
+      <div class="hero-glow-r"></div>
+      <div class="container" style="text-align: center;">
+        <div class="sih-badge-pill">
+          <i class="fas fa-bolt"></i> OFFICIAL MASTER PORTAL · CREATED & AUDITED: 07 SEPTEMBER 2026
+        </div>
+        <h1 class="sih-title">Smart India Hackathon 2026<br><span>All 236 Problem Statements</span></h1>
+        <p class="sih-subtitle">
+          The complete, authentic, and theme-calibrated catalogue of all 236 SIH 2026 problem statements released by AICTE, Central Ministries, and Premier PSUs. Search, filter across all 17 national themes, download the Master PDF, and grab the official 6-slide PPT template.
+        </p>
+
+        <!-- METRICS -->
+        <div class="sih-metrics-grid">
+          <div class="sih-metric-card">
+            <div class="sih-metric-val">236</div>
+            <div class="sih-metric-label">Problem Statements</div>
+          </div>
+          <div class="sih-metric-card">
+            <div class="sih-metric-val">178</div>
+            <div class="sih-metric-label">Software Edition PS</div>
+          </div>
+          <div class="sih-metric-card">
+            <div class="sih-metric-val">58</div>
+            <div class="sih-metric-label">Hardware Edition PS</div>
+          </div>
+          <div class="sih-metric-card">
+            <div class="sih-metric-val">₹1,00,000</div>
+            <div class="sih-metric-label">Prize Per Winning PS</div>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD BUTTONS (WITH 3S FAST-TRACK SECURE DOWNLOAD) -->
+        <div class="sih-cta-group">
+          <button type="button" class="btn-download-pdf" data-file-url="/Assets/SIH_2026_All_Problem_Statements_Master_Catalogue.pdf" data-file-name="SIH_2026_All_236_Problem_Statements_Master_Catalogue.pdf" data-file-type="pdf">
+            <i class="fas fa-file-pdf"></i> Download Master PDF (236 PS)
+          </button>
+          <button type="button" class="btn-download-compact" data-file-url="/Assets/SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf" data-file-name="SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf" data-file-type="compact">
+            <i class="fas fa-bolt"></i> Download Compact PS (27 Pages)
+          </button>
+          <button type="button" class="btn-download-ppt" data-file-url="/Assets/SIH2026-IDEA-Presentation-Format.pptx" data-file-name="SIH2026-IDEA-Presentation-Format.pptx" data-file-type="ppt">
+            <i class="fas fa-file-powerpoint"></i> Download PPT Template
+          </button>
+        </div>
+        <p style="font-size: 12.5px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">
+          <i class="fas fa-check-circle" style="color: var(--cyan-400);"></i> 100% Free Direct Downloads · No Google Drive sign-in required · Updated Daily
+        </p>
+      </div>
+    </section>
+
+    <!-- VIDEO BREAKDOWN GUIDES (COMPLETE MASTERCLASS & STRATEGY SERIES) -->
+    <section class="section" style="background: var(--bg-surface-alt); border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); padding: var(--sp-12) 0;">
+      <div class="container">
+        <div class="sec-header-wrap" style="text-align: center; margin-bottom: var(--sp-6);">
+          <span class="sec-label">// BLINKNBUILD SIH 2026 MASTERCLASS SERIES</span>
+          <h2 class="sec-title">Official Video Guides & Strategy Series</h2>
+          <p class="sec-subtitle">Watch our complete 7-part video series covering newly released problem statements, 6-slide PPT formatting, low-competition strategy, and winning submissions.</p>
+        </div>
+
+        <!-- FEATURED FLAGSHIP MASTERCLASS -->
+        <div class="sih-featured-video">
+          <div class="sih-video-iframe-wrap">
+            <iframe src="https://www.youtube.com/embed/-bIy5IAMO3E" title="SIH 2026: All Problem Statements Breakdown + Master Guide" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: var(--sp-3);">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span class="badge badge-gold" style="font-size: 11px;">🏆 Flagship Masterclass · 12 Min</span>
+              <span class="badge badge-cyan" style="font-size: 11px;">Essential Watch</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 20px; color: #fff; line-height: 1.35;">SIH 2026: Complete Problem Statements Breakdown & Winning Strategy</h3>
+            <p style="font-size: 13.5px; color: var(--neutral-800); line-height: 1.6;">The definitive 12-minute deep dive across all challenges. Learn how to evaluate ministry feasibility, avoid common pitfalls, and prepare an unbeatable submission.</p>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin: 4px 0; font-size: 13px; color: var(--neutral-800);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-check-circle" style="color: var(--cyan-400);"></i> Complete domain analysis across Software and Hardware
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-check-circle" style="color: var(--cyan-400);"></i> Ministry feasibility scoring and competition breakdown
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-check-circle" style="color: var(--cyan-400);"></i> Direct alignment with official AICTE PPT evaluation criteria
+              </div>
+            </div>
+            <div style="margin-top: 4px;">
+              <a href="https://youtu.be/-bIy5IAMO3E" target="_blank" rel="noopener noreferrer" class="btn-primary" style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; padding: 9px 18px; width: fit-content; text-decoration: none;">
+                <i class="fab fa-youtube" style="color: #ff0000;"></i> Watch on YouTube
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION SUBHEAD FOR GRID -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-5); flex-wrap: wrap; gap: 10px;">
+          <h3 style="font-family: 'Orbitron', sans-serif; font-size: 17px; color: #fff; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-layer-group" style="color: var(--cyan-400);"></i> Latest Updates, PS Alerts & Step-by-Step Guides
+          </h3>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan-400);">6 In-Depth Guides</span>
+        </div>
+
+        <!-- 6-CARD GRID (3x2 Desktop, 2x3 Tablet, 1x6 Mobile) -->
+        <div class="sih-videos-grid">
+          <!-- Video 1: 4 NEW PS Released -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/p3VrRXMNDcc" title="Smart India Hackathon 2026: 4 NEW Problem Statements Released" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-cyan" style="font-size: 10.5px;">🚨 Urgent Update · 3 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">NCB & MoFPI</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">SIH 2026: 4 NEW Problem Statements Released</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">Detailed breakdown of the 4 brand-new challenges released by the Narcotics Control Bureau (MHA) and Ministry of Food Processing Industries.</p>
+          </div>
+
+          <!-- Video 2: MoD & Mines PS Added -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/ZVlK3O-3Nss" title="SIH 2026: NEW Problem Statements Added" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-gold" style="font-size: 10.5px;">⚡ New PS Alert · 2 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">Army, MoD & Mines</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">SIH 2026: MoD & Ministry of Mines PS Added</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">Urgent breakdown of the newly added challenges from the Ministry of Defence (Indian Army) and Ministry of Mines, including hardware and software specs.</p>
+          </div>
+
+          <!-- Video 3: Top 10 Least Competitive PS -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/hRImXkA5z50" title="SIH 2026: Top 10 Least Competitive Problem Statements" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-cyan" style="font-size: 10.5px;">💡 Strategy Guide · 2 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">High Win-Rate</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">SIH 2026: Top 10 Least Competitive Problem Statements</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">Strategic analysis to avoid overcrowded clichés (facial recognition, chatbots) and target high-feasibility, low-competition challenges for internal selection.</p>
+          </div>
+
+          <!-- Video 4: Official 6-Slide PPT Masterclass -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/R9vTqoAR5pg" title="SIH 2026 Official PPT Template Walkthrough" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-gold" style="font-size: 10.5px;">📑 PPT Walkthrough · 3 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">Official AICTE Format</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">SIH 2026 Official PPT Template: How to Fill 6 Slides</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">Step-by-step walkthrough of the official AICTE PowerPoint format (Problem, Solution, Architecture Flowchart, Feasibility, Use Cases).</p>
+          </div>
+
+          <!-- Video 5: Release Overview -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/ZFJxgwkVpXg" title="Smart India Hackathon 2026 Problem Statements Released" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-cyan" style="font-size: 10.5px;">🚀 Release Overview · 4 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">Official Release</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">Smart India Hackathon 2026 Release Overview</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">High-impact analysis of the official problem statements release, domain distributions, software vs hardware ratio, and scoring rubric.</p>
+          </div>
+
+          <!-- Video 6: Registration, Team Rules & Guidelines -->
+          <div class="sih-video-card">
+            <div class="sih-video-iframe-wrap">
+              <iframe src="https://www.youtube.com/embed/L73WTwXMVfA" title="Smart India Hackathon 2026 Registration and Guidelines" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+              <span class="badge badge-gold" style="font-size: 10.5px;">⚡ Quick Guide · 1 Min</span>
+              <span style="font-size: 11px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">Rules & Eligibility</span>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 15px; color: #fff; line-height: 1.35;">SIH 2026 Registration, Team Eligibility & Key Dates</h3>
+            <p style="font-size: 13px; color: var(--neutral-800); line-height: 1.5;">Quick breakdown covering the 6-member team rule, mandatory 1 female member requirement, college SPOC nominations, and timeline.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEARCH & EXPLORE PROBLEM STATEMENTS -->
+    <section class="section" id="explorer" style="padding: var(--sp-12) 0;">
+      <div class="container">
+        <div class="sec-header-wrap" style="text-align: center; margin-bottom: var(--sp-8);">
+          <span class="sec-label">// INTERACTIVE REPOSITORY</span>
+          <h2 class="sec-title">Search & Filter 236 Problem Statements</h2>
+          <p class="sec-subtitle">Filter by Category, Central Ministry, or keyword to find the best problem for your team.</p>
+        </div>
+
+        <!-- SEARCH CONTROLS -->
+        <div class="ps-controls">
+          <div>
+            <input type="text" id="sih-search" class="ps-search-input" placeholder="🔍 Search by PS Code (e.g. SIH26001), Title, Ministry, or Keyword (AI, Drone, IoT...)" aria-label="Search Problem Statements">
+          </div>
+          <div>
+            <select id="sih-category-filter" class="ps-select" style="width: 100%;" aria-label="Filter by Category">
+              <option value="all">All Categories (236)</option>
+              <option value="Software">Software Edition (178)</option>
+              <option value="Hardware">Hardware Edition (58)</option>
+            </select>
+          </div>
+          <div>
+            <select id="sih-theme-filter" class="ps-select" style="width: 100%;" aria-label="Filter by Theme">
+              <option value="all">All Themes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="ps-count-bar">
+          <span id="ps-result-count">Showing 226 Problem Statements</span>
+          <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--cyan-400);">Instant Live Filter</span>
+        </div>
+
+        <!-- PS CARDS CONTAINER -->
+        <div class="ps-grid" id="ps-container">
+          <div style="text-align: center; padding: 40px; color: var(--neutral-700);">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p style="margin-top: 10px;">Loading official SIH problem statements catalogue...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIH GUIDELINES SUMMARY -->
+    <section class="section" style="background: var(--bg-surface); border-top: 1px solid var(--border-subtle); padding: var(--sp-12) 0;">
+      <div class="container">
+        <div class="sec-header-wrap" style="text-align: center; margin-bottom: var(--sp-8);">
+          <span class="sec-label">// COMPETITION RULES</span>
+          <h2 class="sec-title">Key SIH 2026 Submission Rules</h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-5);">
+          <div style="background: var(--neutral-100); padding: var(--sp-6); border-radius: var(--r-lg); border: 1px solid var(--border-subtle);">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: var(--cyan-400); margin-bottom: 8px;"><i class="fas fa-users"></i> Team Formation</h4>
+            <p style="font-size: 14px; color: var(--neutral-800); line-height: 1.6;">Exactly 6 members per team from the same college/institute. At least one female member is strictly mandatory per team.</p>
+          </div>
+
+          <div style="background: var(--neutral-100); padding: var(--sp-6); border-radius: var(--r-lg); border: 1px solid var(--border-subtle);">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: var(--gold-400); margin-bottom: 8px;"><i class="fas fa-file-powerpoint"></i> PPT Format</h4>
+            <p style="font-size: 14px; color: var(--neutral-800); line-height: 1.6;">Strict 6-slide limit in official AICTE format. Submissions exceeding 6 slides or altering fonts/templates risk disqualification.</p>
+          </div>
+
+          <div style="background: var(--neutral-100); padding: var(--sp-6); border-radius: var(--r-lg); border: 1px solid var(--border-subtle);">
+            <h4 style="font-family: 'Orbitron', sans-serif; color: var(--cyan-400); margin-bottom: 8px;"><i class="fas fa-trophy"></i> Grand Finale</h4>
+            <p style="font-size: 14px; color: var(--neutral-800); line-height: 1.6;">Shortlisted teams travel to designated Nodal Centers across India for the non-stop 36-Hour continuous hackathon evaluated by ministry juries.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-SECOND PROFIT / DWELL-TIME DOWNLOAD MODAL -->
+    <div id="download-timer-modal" class="download-modal-overlay" style="display: none;">
+      <div class="download-modal-card">
+        <div class="modal-header-row">
+          <div class="modal-server-pill">
+            <i class="fas fa-bolt"></i> FAST-TRACK SECURE SERVER
+          </div>
+          <button id="modal-close-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-file-box">
+          <div class="modal-file-icon" id="modal-file-icon">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <div class="modal-file-info">
+            <h4 id="modal-file-name" class="modal-file-name">SIH_2026_All_236_Problem_Statements_Master_Catalogue.pdf</h4>
+            <p id="modal-file-meta" class="modal-file-meta">Verified Official Compendium · 198 Pages · All 17 Themes</p>
+          </div>
+        </div>
+
+        <!-- TIMER SECTION -->
+        <div class="modal-timer-section">
+          <div class="timer-headline">
+            <span id="timer-status-text">Preparing High-Speed Download Link (5s)...</span>
+            <span id="timer-sec-pill" class="timer-sec-pill">5s</span>
+          </div>
+          <div class="modal-progress-bar-wrap">
+            <div id="modal-progress-bar" class="modal-progress-bar"></div>
+          </div>
+        </div>
+
+        <!-- HIGH VALUE PROMOTIONAL SHOWCASE (ACADEMY + STORE) -->
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Promo Card 1: Hardware Academy Courses -->
+          <div class="modal-monetization-card" style="border-left: 3px solid var(--cyan-400);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="ad-sponsor-label" style="color: var(--cyan-400);"><i class="fas fa-microchip"></i> BLINKNBUILD HARDWARE ACADEMY</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: var(--gold-400); font-weight: 700; background: rgba(245, 166, 35, 0.15); padding: 1px 6px; border-radius: 3px;">100% FREE</span>
+            </div>
+            <h4 class="ad-title">Want to Explore More? Master Silicon &amp; FPGA!</h4>
+            <p class="ad-desc">
+              Free deeply technical hardware courses: Verilog &amp; SystemVerilog (11 Vols), FPGA Mastery (7 Vols), and ASIC Sky130 Flow. Synthesizable RTL, waveforms, and interview vaults.
+            </p>
+            <a href="/courses/" target="_blank" rel="noopener noreferrer" class="btn-modal-sponsor" style="background: linear-gradient(135deg, var(--cyan-400), var(--blue-400)); color: #080D1A; font-weight: 700;">
+              <i class="fas fa-graduation-cap"></i> Explore Free Courses <i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 4px;"></i>
+            </a>
+          </div>
+
+          <!-- Promo Card 2: Free Cheatsheet Store -->
+          <div class="modal-monetization-card" style="border-left: 3px solid #10B981;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="ad-sponsor-label" style="color: #10B981;"><i class="fas fa-tag"></i> BLINKNBUILD CHEATSHEET STORE</span>
+              <span style="font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #10B981; font-weight: 700; background: rgba(16, 185, 129, 0.15); padding: 1px 6px; border-radius: 3px;">LIMITED TIME FREE</span>
+            </div>
+            <h4 class="ad-title">🎁 Download 5 Core ECE &amp; VLSI Master Cheatsheets</h4>
+            <p class="ad-desc">
+              86 pages of dense printable A4 cheat sheets (Verilog/SV, Digital Electronics, FPGA Vivado, Embedded C/C++, Aptitude) struck off from ₹49 to 100% Free!
+            </p>
+            <a href="/store/" target="_blank" rel="noopener noreferrer" class="btn-modal-sponsor" style="background: linear-gradient(135deg, #10B981, #059669); color: #fff; font-weight: 700;">
+              <i class="fas fa-store"></i> Open Store &amp; Grab Free PDFs <i class="fas fa-external-link-alt" style="font-size: 10px; margin-left: 4px;"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- DOWNLOAD ACTION BUTTON -->
+        <div class="modal-action-row">
+          <button id="modal-action-btn" class="btn-modal-download disabled" type="button">
+            <i class="fas fa-spinner fa-spin"></i> Generating Download Link (5s)...
+          </button>
+        </div>
+        <p class="modal-subtext" id="modal-subtext">
+          Your direct download will begin automatically when the timer completes.
+        </p>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img src="/Assets/blinknbuild-logo-180.png" alt="BlinkNBuild Logo" class="footer-logo-img" width="50" height="50" style="margin-bottom: 0;">
+            <span class="logo-text" style="font-size: 20px; margin-left: 0;">Blink<span>N</span>Build</span>
+          </div>
+          <p class="footer-tagline" style="margin-top: 10px;">Building hardware, demystifying circuits, and documenting hackathons.</p>
+          <div class="footer-socials">
+            <a href="https://www.youtube.com/@BlinkNBuild" target="_blank" rel="noopener noreferrer" class="social-icon-link" title="YouTube" aria-label="BlinkNBuild on YouTube"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.linkedin.com/company/blinknbuild/about" target="_blank" rel="noopener noreferrer" class="social-icon-link" title="LinkedIn" aria-label="BlinkNBuild on LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="https://www.instagram.com/blinknbuildyt" target="_blank" rel="noopener noreferrer" class="social-icon-link" title="Instagram" aria-label="BlinkNBuild on Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-col-title">Quick Links</h4>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="/">Home Base</a></li>
+            <li class="footer-link-item"><a href="/courses/">Hardware Academy</a></li>
+            <li class="footer-link-item"><a href="/gate/ece/">GATE ECE Portal</a></li>
+            <li class="footer-link-item"><a href="/sih">SIH 2026 Master Hub</a></li>
+            <li class="footer-link-item"><a href="/#projects">Featured Projects</a></li>
+            <li class="footer-link-item"><a href="/tools/">Tools Hub</a></li>
+            <li class="footer-link-item"><a href="/games/">Games Arcade</a></li>
+            <li class="footer-link-item"><a href="/about.html">About Us</a></li>
+            <li class="footer-link-item"><a href="/contact.html">Contact</a></li>
+            <li class="footer-link-item"><a href="/terms.html">Terms of Service</a></li>
+            <li class="footer-link-item"><a href="/privacy-policy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-col-title">SIH 2026 Downloads</h4>
+          <ul class="footer-links-list">
+            <li class="footer-link-item"><a href="/Assets/SIH_2026_All_Problem_Statements_Master_Catalogue.pdf" download><i class="fas fa-file-pdf" style="color: var(--gold-400); margin-right: 6px;"></i>Download Master PDF (236 PS)</a></li>
+            <li class="footer-link-item"><a href="/Assets/SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf" download><i class="fas fa-bolt" style="color: var(--cyan-400); margin-right: 6px;"></i>Download Compact PS (27 Pages)</a></li>
+            <li class="footer-link-item"><a href="/Assets/SIH2026-IDEA-Presentation-Format.pptx" download><i class="fas fa-file-powerpoint" style="color: var(--cyan-400); margin-right: 6px;"></i>Download Official PPT Template</a></li>
+            <li class="footer-link-item"><a href="https://sih.gov.in" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt" style="margin-right: 6px;"></i>Official SIH Portal</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-col-title">Contact</h4>
+          <ul class="contact-info-list">
+            <li><i class="fas fa-envelope contact-icon"></i> blinknbuildyt@gmail.com</li>
+            <li><i class="fas fa-map-marker-alt contact-icon"></i> Bengaluru, India</li>
+            <li style="margin-top: 10px; color: var(--neutral-600); font-size: 12px; line-height: 1.4;">
+              <i class="fas fa-handshake contact-icon"></i> Collabs & Sponsorships Open
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span class="copyright-text">© 2026 BlinkNBuild. Open Source.</span>
+        <span class="credit-text">Built with solder, code, and a blink of an <span class="blink-led">LED</span><span class="led-dot"></span></span>
+      </div>
+      <div style="font-size: 11.5px; color: var(--neutral-600); line-height: 1.6; margin-top: 16px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; text-align: center;">
+        All company, brand, and product names referenced on BlinkNBuild (including Qualcomm, Intel, NVIDIA, Apple, AMD, Arm, Synopsys, Cadence, Xilinx, Texas Instruments, Arduino, Espressif, and Raspberry Pi) are trademarks or registered trademarks of their respective holders. Use of these names does not imply affiliation, sponsorship, or endorsement. BlinkNBuild is an independent maker and educational initiative.
+      </div>
+
+    </div>
+  </footer>
+
+  <script src="/hero-canvas.js" defer></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      let psData = [];
+      const container = document.getElementById('ps-container');
+      const searchInput = document.getElementById('sih-search');
+      const categoryFilter = document.getElementById('sih-category-filter');
+      const themeFilter = document.getElementById('sih-theme-filter');
+      const countLabel = document.getElementById('ps-result-count');
+
+      // The explorer needs all four nodes; without them every handler below
+      // would throw on a null reference and take the rest of the page with it.
+      if (!container || !searchInput || !categoryFilter || !themeFilter) {
+        console.warn('SIH explorer markup incomplete - interactive filter disabled.');
+        return;
+      }
+
+      // 3-Second Wait Time Download Modal Elements
+      const modal = document.getElementById('download-timer-modal');
+      const modalCloseBtn = document.getElementById('modal-close-btn');
+      const modalFileName = document.getElementById('modal-file-name');
+      const modalFileMeta = document.getElementById('modal-file-meta');
+      const modalFileIcon = document.getElementById('modal-file-icon');
+      const modalTimerPill = document.getElementById('timer-sec-pill');
+      const modalStatusText = document.getElementById('timer-status-text');
+      const modalProgressBar = document.getElementById('modal-progress-bar');
+      const modalActionBtn = document.getElementById('modal-action-btn');
+      const modalSubtext = document.getElementById('modal-subtext');
+
+      let downloadTimerInterval = null;
+      let activeDownloadUrl = '';
+      let activeFileName = '';
+
+      function openDownloadModal(url, filename, type) {
+        activeDownloadUrl = url;
+        activeFileName = filename;
+        modalFileName.textContent = filename;
+
+        if (type === 'pdf') {
+          modalFileIcon.innerHTML = '<i class="fas fa-file-pdf"></i>';
+          modalFileIcon.style.color = 'var(--gold-400)';
+          modalFileMeta.textContent = 'Official SIH 2026 Master Catalogue · 231 Pages · Verified: 07 Sep 2026 · PDF';
+        } else if (type === 'compact') {
+          modalFileIcon.innerHTML = '<i class="fas fa-bolt"></i>';
+          modalFileIcon.style.color = 'var(--cyan-400)';
+          modalFileMeta.textContent = 'SIH 2026 Quick-Reference Compilation · 27 Pages · Verified: 07 Sep 2026 · Fast PDF';
+        } else {
+          modalFileIcon.innerHTML = '<i class="fas fa-file-powerpoint"></i>';
+          modalFileIcon.style.color = 'var(--cyan-400)';
+          modalFileMeta.textContent = 'Official AICTE 6-Slide Idea Presentation Format · .PPTX Template';
+        }
+
+        // Reset state
+        modalTimerPill.textContent = '5s';
+        modalStatusText.textContent = 'Preparing High-Speed Download Link (5s)...';
+        modalProgressBar.style.width = '0%';
+        modalActionBtn.className = 'btn-modal-download disabled';
+        modalActionBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Download Link (5s)...';
+        modalActionBtn.onclick = null;
+        modalSubtext.textContent = 'Your direct download will begin automatically when the timer completes.';
+
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('active'), 10);
+
+        if (downloadTimerInterval) clearInterval(downloadTimerInterval);
+
+        const startTime = Date.now();
+        const duration = 5000; // 5 seconds
+
+        downloadTimerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(100, (elapsed / duration) * 100);
+          modalProgressBar.style.width = `${progress}%`;
+
+          const remainingSeconds = Math.max(0, Math.ceil((duration - elapsed) / 1000));
+          if (remainingSeconds > 0) {
+            modalTimerPill.textContent = `${remainingSeconds}s`;
+            modalActionBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Generating Download Link (${remainingSeconds}s)...`;
+          }
+
+          if (elapsed >= duration) {
+            clearInterval(downloadTimerInterval);
+            modalProgressBar.style.width = '100%';
+            modalTimerPill.textContent = 'Ready!';
+            modalStatusText.textContent = 'Download Link Ready & Verified!';
+            modalActionBtn.className = 'btn-modal-download ready';
+            modalActionBtn.innerHTML = '<i class="fas fa-check-circle"></i> Download Started (Click if not started)';
+            
+            modalActionBtn.onclick = () => {
+              triggerDirectDownload(activeDownloadUrl, activeFileName);
+            };
+
+            modalSubtext.textContent = 'Your download has been triggered automatically. Click the green button above if it did not start.';
+
+            // Auto trigger download
+            triggerDirectDownload(activeDownloadUrl, activeFileName);
+
+            if (window.logFirebaseEvent) {
+              window.logFirebaseEvent('file_download', {
+                file_name: activeFileName,
+                link_url: activeDownloadUrl,
+                wait_time_seconds: 5
+              });
+              window.logFirebaseEvent('download_timer_complete', {
+                file_name: activeFileName
+              });
+            }
+          }
+        }, 100);
+      }
+
+      function triggerDirectDownload(url, filename) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      function closeModal() {
+        modal.classList.remove('active');
+        if (downloadTimerInterval) clearInterval(downloadTimerInterval);
+        setTimeout(() => {
+          modal.style.display = 'none';
+        }, 250);
+      }
+
+      modalCloseBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      // Bind all download buttons on page
+      function bindDownloadButtons() {
+        document.querySelectorAll('.btn-download-pdf, a[href*="Problem_Statements_Master_Catalogue.pdf"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openDownloadModal(
+              '/Assets/SIH_2026_All_Problem_Statements_Master_Catalogue.pdf',
+              'SIH_2026_All_236_Problem_Statements_Master_Catalogue.pdf',
+              'pdf'
+            );
+          });
+        });
+
+        document.querySelectorAll('.btn-download-compact, a[href*="Quick_Reference_Problem_Statements_Compilation.pdf"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openDownloadModal(
+              '/Assets/SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf',
+              'SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf',
+              'compact'
+            );
+          });
+        });
+
+        document.querySelectorAll('.btn-download-ppt, a[href*="Presentation-Format.pptx"]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openDownloadModal(
+              '/Assets/SIH2026-IDEA-Presentation-Format.pptx',
+              'SIH2026-IDEA-Presentation-Format.pptx',
+              'ppt'
+            );
+          });
+        });
+      }
+
+      // Check for incoming download parameter from YouTube (e.g. ?download=pdf, ?download=ppt, ?download=compact)
+      function checkIncomingDownloadParam() {
+        const params = new URLSearchParams(window.location.search);
+        const dl = params.get('download');
+        if (!dl) return;
+        
+        setTimeout(() => {
+          if (dl === 'pdf' || dl === 'master') {
+            openDownloadModal(
+              '/Assets/SIH_2026_All_Problem_Statements_Master_Catalogue.pdf',
+              'SIH_2026_All_236_Problem_Statements_Master_Catalogue.pdf',
+              'pdf'
+            );
+          } else if (dl === 'compact') {
+            openDownloadModal(
+              '/Assets/SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf',
+              'SIH_2026_Quick_Reference_Problem_Statements_Compilation.pdf',
+              'compact'
+            );
+          } else if (dl === 'ppt') {
+            openDownloadModal(
+              '/Assets/SIH2026-IDEA-Presentation-Format.pptx',
+              'SIH2026-IDEA-Presentation-Format.pptx',
+              'ppt'
+            );
+          }
+        }, 400);
+      }
+
+      try {
+        const res = await fetch('/Assets/sih_2026_problem_statements.json?v=236_07sep2026', { cache: 'no-cache' });
+        psData = await res.json();
+        populateThemes(psData);
+        renderPS();
+        bindDownloadButtons();
+        checkIncomingDownloadParam();
+      } catch (err) {
+        console.error('Error loading SIH JSON:', err);
+        container.innerHTML = '<div style="text-align:center; padding:30px; color:var(--gold-400);">Could not load dynamic problem statements. Please use the direct Download PDF button above.</div>';
+        bindDownloadButtons();
+        checkIncomingDownloadParam();
+      }
+
+      function populateThemes(data) {
+        const themes = new Set();
+        data.forEach(item => {
+          if (item.theme && item.theme.trim()) {
+            themes.add(item.theme.trim());
+          }
+        });
+        if (!themeFilter) return;
+        const sortedThemes = Array.from(themes).sort();
+        themeFilter.innerHTML = '<option value="all">All Themes (' + sortedThemes.length + ')</option>';
+        sortedThemes.forEach(t => {
+          const opt = document.createElement('option');
+          opt.value = t;
+          opt.textContent = t;
+          themeFilter.appendChild(opt);
+        });
+      }
+
+      function renderPS() {
+        const query = searchInput.value.toLowerCase().trim();
+        const selectedCat = categoryFilter.value;
+        const selectedTheme = themeFilter.value;
+
+        const filtered = psData.filter(item => {
+          const matchesCat = selectedCat === 'all' || (item.category && item.category.toLowerCase() === selectedCat.toLowerCase());
+          const matchesTheme = selectedTheme === 'all' || (item.theme && item.theme.toLowerCase() === selectedTheme.toLowerCase());
+          
+          const codeMatch = item.ps_code && item.ps_code.toLowerCase().includes(query);
+          const titleMatch = item.title && item.title.toLowerCase().includes(query);
+          const orgMatch = item.organization && item.organization.toLowerCase().includes(query);
+          const detailsMatch = (item.details || item.description) && (item.details || item.description).toLowerCase().includes(query);
+
+          return matchesCat && matchesTheme && (query === '' || codeMatch || titleMatch || orgMatch || detailsMatch);
+        });
+
+        countLabel.textContent = `Showing ${filtered.length} of ${psData.length} Problem Statements`;
+
+        if (filtered.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; padding: var(--sp-10); background: var(--bg-surface); border: 1px dashed var(--border-soft); border-radius: var(--r-lg);">
+              <i class="fas fa-search" style="font-size: 32px; color: var(--neutral-600); margin-bottom: 10px;"></i>
+              <p style="color: var(--neutral-800); font-family: 'Exo 2', sans-serif;">No problem statements matched your search criteria.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Safe HTML sanitizer
+        function escapeHtml(str) {
+          if (!str) return '';
+          return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        }
+
+        container.innerHTML = '';
+        filtered.forEach((item, i) => {
+          const card = document.createElement('div');
+          card.className = 'ps-card';
+          
+          const catClass = (item.category || '').toLowerCase().includes('hard') ? 'hardware' : 'software';
+          const catLabel = escapeHtml(item.category || 'Software');
+          const safeCode = escapeHtml(item.ps_code || ('SIH26' + (item.index || i+1)));
+          const safeTitle = escapeHtml(item.title || '');
+          const safeOrg = escapeHtml(item.organization || 'Government of India');
+          const safeTheme = escapeHtml(item.theme || 'General Innovation');
+          const rawDetails = item.details || item.description || 'Please refer to the official Master PDF catalogue for detailed requirements.';
+          const safeDetails = escapeHtml(rawDetails);
+          const safeIndex = parseInt(item.index || i+1, 10);
+
+          card.innerHTML = `
+            <div class="ps-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="ps-code-badge">${safeCode}</span>
+                <span class="ps-category-badge ${catClass}">${catLabel}</span>
+              </div>
+              <span style="font-size: 12px; color: var(--neutral-700); font-family: 'JetBrains Mono', monospace;">#${safeIndex} of ${psData.length}</span>
+            </div>
+
+            <h3 class="ps-title">${safeTitle}</h3>
+
+            <div class="ps-meta-row">
+              <div class="ps-meta-item"><i class="fas fa-building"></i> <span>${safeOrg}</span></div>
+              <div class="ps-meta-item"><i class="fas fa-tag"></i> <span>${safeTheme}</span></div>
+            </div>
+
+            <button class="ps-details-toggle" id="btn-toggle-${safeIndex}">
+              <i class="fas fa-chevron-down" id="icon-toggle-${safeIndex}"></i> View Detailed Problem Statement & Requirements
+            </button>
+
+            <div class="ps-details-body" id="details-${safeIndex}">
+              ${safeDetails}
+            </div>
+          `;
+
+          container.appendChild(card);
+
+          // Add toggle event
+          const toggleBtn = card.querySelector('.ps-details-toggle');
+          const detailsBody = card.querySelector('.ps-details-body');
+          const toggleIcon = toggleBtn ? toggleBtn.querySelector('i') : null;
+
+          if (!toggleBtn || !detailsBody || !toggleIcon) return;
+          toggleBtn.setAttribute('aria-expanded', 'false');
+
+          toggleBtn.addEventListener('click', () => {
+            const isOpen = detailsBody.classList.toggle('open');
+            toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            if (isOpen) {
+              toggleIcon.className = 'fas fa-chevron-up';
+              toggleBtn.style.color = 'var(--gold-400)';
+              if (window.logFirebaseEvent) {
+                window.logFirebaseEvent('view_item', {
+                  item_id: safeCode,
+                  item_name: safeTitle,
+                  item_category: catLabel,
+                  organization: safeOrg,
+                  theme: safeTheme
+                });
+                window.logFirebaseEvent('sih_view_details', {
+                  ps_code: safeCode,
+                  title: safeTitle,
+                  category: catLabel
+                });
+              }
+            } else {
+              toggleIcon.className = 'fas fa-chevron-down';
+              toggleBtn.style.color = 'var(--cyan-400)';
+            }
+          });
+        });
+      }
+
+      let sihSearchDebounce;
+      searchInput.addEventListener('input', () => {
+        renderPS();
+        clearTimeout(sihSearchDebounce);
+        if (window.logFirebaseEvent && searchInput.value.length > 2) {
+          sihSearchDebounce = setTimeout(() => {
+            window.logFirebaseEvent('search', {
+              search_term: searchInput.value,
+              search_category: 'sih_problem_statements'
+            });
+            window.logFirebaseEvent('sih_search', { query: searchInput.value });
+          }, 500);
+        }
+      });
+
+      categoryFilter.addEventListener('change', () => {
+        renderPS();
+        if (window.logFirebaseEvent) {
+          window.logFirebaseEvent('select_content', {
+            content_type: 'sih_category_filter',
+            item_id: categoryFilter.value
+          });
+          window.logFirebaseEvent('sih_filter_category', { category: categoryFilter.value });
+        }
+      });
+
+      themeFilter.addEventListener('change', () => {
+        renderPS();
+        if (window.logFirebaseEvent) {
+          window.logFirebaseEvent('select_content', {
+            content_type: 'sih_theme_filter',
+            item_id: themeFilter.value
+          });
+          window.logFirebaseEvent('sih_filter_theme', { theme: themeFilter.value });
+        }
+      });
+
+      // Scroll Depth Tracking on SIH Hub
+      const sihScrollThresholds = [25, 50, 75, 90];
+      const sihTriggeredScrolls = {};
+      window.addEventListener('scroll', () => {
+        const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalScroll <= 0) return;
+        const scrollPercent = Math.round((window.scrollY / totalScroll) * 100);
+        sihScrollThresholds.forEach(t => {
+          if (scrollPercent >= t && !sihTriggeredScrolls[t]) {
+            sihTriggeredScrolls[t] = true;
+            if (window.logFirebaseEvent) {
+              window.logFirebaseEvent('scroll', { percent_scrolled: t });
+              window.logFirebaseEvent('scroll_depth', { depth: t, page: 'sih' });
+            }
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"6e7a072e48104256aaaef358514a1197","r":1,"spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

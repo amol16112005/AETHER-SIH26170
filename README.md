@@ -48,9 +48,30 @@ First run synthesizes lot-structured burn-in data (ISRO flight data is not publi
 trains on some lots, and scores **unseen lots**. Artifacts from `scripts/train.py`
 are already in `data/` and `models/` so the dashboard opens immediately.
 
-## Public deploy (Streamlit Community Cloud)
+## Public deploy (Render)
 
 The GitHub repo is public: [amol16112005/AETHER-SIH26170](https://github.com/amol16112005/AETHER-SIH26170).
+Render reads `render.yaml`, `.python-version`, and `.streamlit/config.toml`.
+
+1. Commit and push `main` to GitHub (Render deploys from the remote, not your laptop).
+2. Sign up at [dashboard.render.com](https://dashboard.render.com) with GitHub.
+3. **New → Blueprint** → select `amol16112005/AETHER-SIH26170` → apply `render.yaml`.
+   Alternative: **New → Web Service** → same repo → fill the values below.
+4. Wait for the build (2–5 minutes). The public URL is `https://aether-sih26170.onrender.com` (or the name Render shows).
+5. First visit on the **Free** plan can take ~1 minute if the service was idle.
+
+| Field | Value |
+| --- | --- |
+| Runtime | Python 3 |
+| Branch | `main` |
+| Build command | `pip install -r requirements.txt` |
+| Start command | `streamlit run app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true --server.enableCORS=false --server.enableXsrfProtection=false` |
+| Health check path | `/_stcore/health` |
+| Instance | **Free** (512 MB). If the process is killed for memory, switch to **Standard** (`1c-2g`). |
+
+Free web services sleep after 15 minutes with no traffic and wake on the next request.
+
+## Public deploy (Streamlit Community Cloud)
 
 1. Open [share.streamlit.io/deploy](https://share.streamlit.io/deploy) and sign in with GitHub.
 2. Repository: `amol16112005/AETHER-SIH26170`

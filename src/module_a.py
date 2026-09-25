@@ -102,13 +102,34 @@ def fit_outlier_models(df: pd.DataFrame) -> OutlierArtifacts:
     )
 
 
-def score_outliers(df: pd.DataFrame, art: OutlierArtifacts) -> pd.DataFrame:
+def iforest_raw_range(df: pd.DataFrame, art: OutlierArtifacts) -> tuple[float, float]:
+    """Min/max of -decision_function on a reference population.
+
+    Live scoring of one part (or a small uploaded lot) must use this range so
+    Isolation Forest scores stay on the same scale as the calibrated thresholds.
+    """
+    X, _ = early_model_matrix(df)
+    Xs = art.scaler.transform(X)
+    raw_if = -art.iforest.decision_function(Xs)
+    return float(np.min(raw_if)), float(np.max(raw_if))
+
+
+def score_outliers(
+    df: pd.DataFrame,
+    art: OutlierArtifacts,
+    iforest_range: tuple[float, float] | None = None,
+) -> pd.DataFrame:
     X, _ = early_model_matrix(df)
     Xs = art.scaler.transform(X)
 
     # sklearn IF: lower decision_function => more anomalous. Map to [0, 1]-ish.
     raw_if = -art.iforest.decision_function(Xs)
-    if_score = (raw_if - raw_if.min()) / (np.ptp(raw_if) + 1e-9)
+    if iforest_range is not None:
+        lo, hi = iforest_range
+    else:
+        lo = float(np.min(raw_if))
+        hi = float(np.max(raw_if))
+    if_score = (raw_if - lo) / ((hi - lo) + 1e-9)
 
     Z = X[art.maha_names].to_numpy(dtype=float)
     maha = art.cov.mahalanobis(Z)
