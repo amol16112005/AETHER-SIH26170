@@ -37,7 +37,7 @@ three-way QA decision a human inspector can read.
 ## Quick start
 
 ```powershell
-cd C:\Users\amolw\OneDrive\Desktop\pioneers
+cd <this-repo>
 python -m pip install -r requirements-dev.txt
 python scripts\train.py
 python scripts\evaluate.py
@@ -83,21 +83,30 @@ Free web services sleep after 15 minutes with no traffic and wake on the next re
 
 ## Held-out lot results
 
-24 lots, 4,945 parts. Train / val / test are **split by lot**, not by part.
+25 lots, 5,145 parts. Train / val / test are **split by lot**, not by part.
 Every defective in the test lots still passes the datasheet at 24 h — a static
 screen would miss all of them.
 
 | | Value |
 | --- | --- |
-| Detection recall (FN is the thing ISRO penalizes) | **100%** (0 miss / 102 latent defects) |
-| Latent-escape catch rate | **100%** |
-| 24 h REJECT precision | **98.7%** (two-signal rule: PAT or unsafe drift) |
-| Decisions | 1,172 PASS · 202 HOLD · 75 REJECT |
+| Held-out result (frozen scikit-learn 1.8.0 run) | **0 escapes: 75 rejected at 24 h, 27 sent to the 96 h check, 12.7% of healthy parts held.** 100% is the catch rate (HOLD or REJECT). |
+| Catch rate (HOLD or REJECT) | **100%** (0 defective PASS / 102 defectives) |
+| REJECT-only recall | **73.5%** (75 / 102). The other 27 defectives are HOLD, waiting on the 96 h check. |
+| Healthy parts held | **12.7%** (171 / 1,347). One further healthy part is REJECT. |
+| By defect type (REJECT / HOLD / PASS) | Maverick 42 / 0 / 0 · Latent drift 18 / 15 / 0 · Runaway 15 / 12 / 0 |
+| Latent-escape catch rate | **100%** (HOLD or REJECT; none released) |
+| 24 h REJECT precision | **98.7%** (75 of 76 REJECT calls; two-signal rule: PAT or unsafe drift) |
+| Decisions | 1,175 PASS · 198 HOLD · 76 REJECT |
 | IDDQ 168 h MAE | **0.51 µA** vs 1.26 µA linear extrapolation |
-| Leakage 168 h MAE | **0.31 µA** vs 0.72 µA |
+| Leakage 168 h MAE | **0.30 µA** vs 0.72 µA |
 | tpd 168 h MAE | **0.07 ns** vs 0.19 ns |
-| Chamber hours recovered from early REJECT | 10,800 h on the test lots |
+| VTH 168 h MAE | **0.007 V** vs 0.019 V |
+| IDSAT 168 h MAE | **0.20 mA** vs 0.46 mA |
+| Reverse leakage 168 h MAE | **0.10 µA** vs 0.29 µA |
+| Chamber hours recovered from early REJECT | 10,944 h on the test lots |
 | Textbook example LOTSIH-0045 | Static **PASS** (45.3 < 50) · Dynamic **REJECT** (z = 35 vs lot 10.1 µA) |
+
+Five earlier draws (seeds 42, 7, 11, 19, 23) on the three SIH observables are in `models/metrics_seeds.json`. The pitch line is the frozen extra-param run above, not that average. `scripts/seed_sweep.py` writes the seed file and does not replace the frozen bundle.
 
 ## What the models actually do
 
@@ -111,9 +120,16 @@ features so a fast process corner does not get the whole lot scrapped.
 ### Module B — 24 h → 168 h
 
 Inputs: `Value_0h`, `Value_24h` (plus slope, relative change, log, linear
-extrapolation). Target: hidden `Value_168h` for IDDQ, leakage, and tpd.
+extrapolation). Target: hidden `Value_168h` for IDDQ, leakage, tpd, and the
+optional extras VTH, IDSAT, and per-junction reverse leakage.
 If the predicted slope exceeds the healthy 95th-percentile safety slope, or the
 forecast crosses 90% of the datasheet cap, the part is flagged for early reject.
+
+Live lots still only need IDDQ, leakage, and tpd. VTH, IDSAT, reverse leakage,
+and a room-temp **IDDQ @ 25 °C** checkpoint (IDDQ/T) are optional ATE columns:
+PAT and 168 h forecasts run when they are present. Isolation Forest and the
+HOLD/REJECT fuse stay on the three SIH observables so a 3-column CSV still
+screens. Power-supply noise (L di/dt) and IDDQ vs frequency are out of scope.
 
 ### Decision policy
 
@@ -138,7 +154,8 @@ Full write-up (electronics, software, ML, results):
 
 ```
 app.py                 Streamlit QA workstation
-scripts/train.py       Generate data, train, write metrics
+scripts/train.py       Generate data, train, write the frozen bundle
+scripts/seed_sweep.py  Five-seed ranges; does not replace the frozen bundle
 src/generate_data.py   Physics-informed latent-defect lots
 src/module_a.py        PAT + Isolation Forest + Mahalanobis
 src/module_b.py        Ridge / HGB 168 h forecast
@@ -151,8 +168,10 @@ tests/                 PAT unit test + held-out recall smoke
 
 - Splits are **by lot**, not by part. A model that memorizes one process corner
   does not get credit on another.
-- The synthetic generator injects the three modes that matter: **mavericks**
-  (in-spec, off-lot), **latent drift** (normal 0 h, bad slope), and **runaway**
-  (quadratic aging that static limits only catch late).
+- The synthetic generator injects three modes: **mavericks** (in-spec, off-lot),
+  **latent drift** (normal 0 h, bad slope), and **runaway** (quadratic aging).
+  On the frozen test lots every maverick is REJECT (42/42). Latent drift is
+  18 REJECT and 15 HOLD. Runaway is 14 REJECT and 13 HOLD. None of these modes
+  stays healthy through 24 h, so this 100% catch rate is not a late-onset result.
 - Replace `data/burnin_parts.csv` with a real ATE export (same column names) and
   re-run `python scripts/train.py`. No other code changes.

@@ -7,6 +7,7 @@ from typing import Any
 import pandas as pd
 
 from src.config import PARAM_META, PARAMS, PAT_K
+from src.features import present_params
 from src.module_b import DriftModel, ridge_contributions
 
 FEATURE_LABELS = {
@@ -16,6 +17,12 @@ FEATURE_LABELS = {
     "ileak_24h": "Leakage @ 24 h",
     "tpd_0h": "tpd @ 0 h",
     "tpd_24h": "tpd @ 24 h",
+    "vth_0h": "VTH @ 0 h",
+    "vth_24h": "VTH @ 24 h",
+    "idsat_0h": "IDSAT @ 0 h",
+    "idsat_24h": "IDSAT @ 24 h",
+    "irev_0h": "Reverse leakage @ 0 h",
+    "irev_24h": "Reverse leakage @ 24 h",
     "delta24": "24 h change",
     "slope24": "early slope",
     "rel24": "relative change",
@@ -35,18 +42,21 @@ def static_vs_dynamic(row: pd.Series) -> dict[str, Any]:
     """The judging story: datasheet PASS vs lot-relative FAIL."""
     lines: list[str] = []
     static_pass = True
-    for param in PARAMS:
+    for param in present_params(pd.DataFrame([row])):
         meta = PARAM_META[param]
         v24 = float(row[f"{param}_24h"])
         cap = float(row.get(f"datasheet_{param}_max", meta["datasheet_max"]))
         z24 = float(row[f"{param}_24h_z"])
         lot_med = float(row[f"{param}_0h_median"])
+        lo = meta.get("datasheet_min")
         in_box = v24 <= cap
+        if lo is not None:
+            in_box = in_box and v24 >= float(lo)
         if not in_box:
             static_pass = False
-        if (not in_box) or z24 > 3:
+        if (not in_box) or abs(z24) > 3:
             tag = "STATIC PASS" if in_box else "STATIC FAIL"
-            dyn = "lot outlier" if z24 > PAT_K else ("elevated vs lot" if z24 > 3 else "in-lot")
+            dyn = "lot outlier" if abs(z24) > PAT_K else ("elevated vs lot" if abs(z24) > 3 else "in-lot")
             lines.append(
                 f"{meta['label']}: {_fmt(v24, meta['unit'])} vs datasheet {_fmt(cap, meta['unit'])} → {tag}. "
                 f"Lot median {_fmt(lot_med, meta['unit'])}, robust z = {z24:.1f} → {dyn}."
@@ -66,7 +76,17 @@ def explain_part(row: pd.Series, drift_models: dict[str, DriftModel]) -> dict[st
     drift_bullets: list[str] = []
     param_cards: list[dict[str, Any]] = []
 
-    for param in PARAMS:
+    if "iddq_ea_z" in row.index and pd.notna(row["iddq_ea_z"]) and abs(float(row["iddq_ea_z"])) > PAT_K:
+        tcoeff = float(row["iddq_tcoeff"]) if "iddq_tcoeff" in row.index and pd.notna(row["iddq_tcoeff"]) else float("nan")
+        pat_bullets.append(
+            f"IDDQ temperature coefficient is a lot outlier (activation-energy proxy z = {float(row['iddq_ea_z']):.1f}"
+            + (f", {tcoeff:.4f} µA/°C" if tcoeff == tcoeff else "")
+            + "). Weak T-dependence is a metallic / oxide-short signature."
+        )
+
+    for param in present_params(pd.DataFrame([row])):
+        if param not in drift_models or f"pred_{param}_168h" not in row.index:
+            continue
         meta = PARAM_META[param]
         unit = meta["unit"]
         v0 = float(row[f"{param}_0h"])
@@ -80,20 +100,21 @@ def explain_part(row: pd.Series, drift_models: dict[str, DriftModel]) -> dict[st
         pat_hi = float(row[f"{param}_24h_pat_hi"])
         safety = float(row[f"{param}_safety_slope"])
         slope = float(row[f"{param}_slope24"])
+        aging = meta.get("aging", "up")
 
-        if z24 > PAT_K:
+        if abs(z24) > PAT_K:
             pat_bullets.append(
-                f"{meta['label']} at 24 h is {_fmt(v24, unit)} — {z24:.1f} robust σ above the lot "
+                f"{meta['label']} at 24 h is {_fmt(v24, unit)} — {z24:.1f} robust σ from the lot "
                 f"median ({_fmt(lot_med, unit)}). Datasheet max is {_fmt(meta['datasheet_max'], unit)}, "
                 f"so a static screen would miss this maverick."
             )
-        elif z24 > 3:
+        elif abs(z24) > 3:
             pat_bullets.append(
                 f"{meta['label']} at 24 h sits {z24:.1f} σ from the lot centroid "
                 f"({_fmt(v24, unit)} vs lot {_fmt(lot_med, unit)})."
             )
 
-        if slope_z > PAT_K:
+        if (aging == "down" and slope_z < -PAT_K) or (aging != "down" and slope_z > PAT_K):
             pat_bullets.append(
                 f"{meta['label']} is drifting {slope_z:.1f} σ faster than the lot "
                 f"({slope:.4f} {unit}/h vs safety {safety:.4f} {unit}/h)."
@@ -101,13 +122,18 @@ def explain_part(row: pd.Series, drift_models: dict[str, DriftModel]) -> dict[st
 
         if bool(row[f"{param}_exceeds_datasheet"]):
             drift_bullets.append(
-                f"Predicted {meta['label']} at 168 h is {_fmt(pred, unit)}, above 90% of the "
-                f"datasheet cap ({_fmt(meta['datasheet_max'], unit)}). Early reject is safer than waiting."
+                f"Predicted {meta['label']} at 168 h is {_fmt(pred, unit)}, past 90% of the "
+                f"datasheet envelope ({_fmt(meta['datasheet_max'], unit)}). Early reject is safer than waiting."
             )
         elif bool(row[f"{param}_exceeds_safety"]):
-            drift_bullets.append(
-                f"Predicted 168 h {meta['label']} drift exceeds the healthy 95th-percentile safety slope."
-            )
+            if aging == "down":
+                drift_bullets.append(
+                    f"Predicted 168 h {meta['label']} drop exceeds the healthy 5th-percentile safety slope."
+                )
+            else:
+                drift_bullets.append(
+                    f"Predicted 168 h {meta['label']} drift exceeds the healthy 95th-percentile safety slope."
+                )
 
         contrib = ridge_contributions(row, drift_models[param])
         parts = [(k, v) for k, v in contrib.items() if k not in {"intercept", "prediction"}]

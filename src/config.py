@@ -14,7 +14,18 @@ MODELS_DIR = ROOT / "models"
 
 TIMES_H = (0, 24, 96, 168)
 EARLY_TIMES_H = (0, 24)
-PARAMS = ("iddq", "ileak", "tpd")
+
+# SIH26170 names these three. Live CSV and Isolation Forest stay on this set.
+REQUIRED_PARAMS = ("iddq", "ileak", "tpd")
+# Optional ATE columns: PAT + drift when present, skipped when the lot omits them.
+OPTIONAL_PARAMS = ("vth", "idsat", "irev")
+PARAMS = REQUIRED_PARAMS + OPTIONAL_PARAMS
+
+# Room-temp IDDQ checkpoint. Temperature coefficient = (IDDQ_125C − IDDQ_25C) / DT.
+TCOEFF_COLD_C = 25.0
+TCOEFF_HOT_C = 125.0
+TCOEFF_DT = TCOEFF_HOT_C - TCOEFF_COLD_C
+TCOEFF_COLD_COL = "iddq_25c"
 
 PARAM_META = {
     "iddq": {
@@ -22,6 +33,8 @@ PARAM_META = {
         "unit": "µA",
         "datasheet_max": 50.0,
         "sided": "upper",
+        "aging": "up",
+        "required": True,
         "color": "#4FC3F7",
     },
     "ileak": {
@@ -29,6 +42,8 @@ PARAM_META = {
         "unit": "µA",
         "datasheet_max": 50.0,
         "sided": "upper",
+        "aging": "up",
+        "required": True,
         "color": "#FFB74D",
     },
     "tpd": {
@@ -36,7 +51,38 @@ PARAM_META = {
         "unit": "ns",
         "datasheet_max": 10.0,
         "sided": "both",
+        "aging": "up",
+        "required": True,
         "color": "#81C784",
+    },
+    "vth": {
+        "label": "Threshold voltage (VTH)",
+        "unit": "V",
+        "datasheet_max": 0.90,
+        "datasheet_min": 0.28,
+        "sided": "both",
+        "aging": "up",
+        "required": False,
+        "color": "#CE93D8",
+    },
+    "idsat": {
+        "label": "On-state saturation current (IDSAT)",
+        "unit": "mA",
+        "datasheet_max": 25.0,
+        "datasheet_min": 4.0,
+        "sided": "both",
+        "aging": "down",
+        "required": False,
+        "color": "#F48FB1",
+    },
+    "irev": {
+        "label": "Reverse leakage (per-junction)",
+        "unit": "µA",
+        "datasheet_max": 12.0,
+        "sided": "upper",
+        "aging": "up",
+        "required": False,
+        "color": "#FF8A65",
     },
 }
 
@@ -47,6 +93,9 @@ MIN_SIGMA_FLOOR = {
     "iddq": 0.15,
     "ileak": 0.08,
     "tpd": 0.03,
+    "vth": 0.004,
+    "idsat": 0.08,
+    "irev": 0.03,
 }
 
 # Decision costs: a missed latent defect in a flight payload is catastrophic.

@@ -14,6 +14,7 @@ import pandas as pd
 
 from src.config import MODELS_DIR
 from src.explain import explain_part
+from src.metrics import format_defect_lines, screening_headline, seed_span_line
 from src.pipeline import load_bundle
 
 
@@ -24,9 +25,26 @@ def main() -> None:
     print("SIH26170 — held-out lots")
     print("=" * 56)
     print("\n1. Anomaly Detection Score  (false negatives are catastrophic)")
-    print(f"   Recall                 {t['recall']:.1%}")
-    print(f"   False negatives        {t['fn']} / {t['defectives']}")
+    print(f"   {screening_headline(t)}")
+    print(f"   Catch rate (HOLD|REJECT) {t.get('catch_rate', t['recall']):.1%}")
+    if "reject_only_recall" in t:
+        print(
+            f"   REJECT-only recall     {t['reject_only_recall']:.1%}  "
+            f"({t['reject_true_positives']}/{t['defectives']})"
+        )
+        print(
+            f"   Healthy parts held     {t['healthy_hold_rate']:.1%}  "
+            f"({t['healthy_holds']}/{t['healthy_n']})"
+        )
+        for line in format_defect_lines(t):
+            print(f"   {line}")
+    print(f"   False negatives        {t['fn']} / {t['defectives']}   (defective PASS)")
     print(f"   Latent-escape catch    {t['latent_catch_rate']:.1%}  ({t['latent_caught']}/{t['latent_total']})")
+    seed_path = MODELS_DIR / "metrics_seeds.json"
+    if seed_path.exists():
+        summary = json.loads(seed_path.read_text(encoding="utf-8")).get("summary")
+        if summary:
+            print(f"   {seed_span_line(summary)}")
     print(f"   Static 24 h misses     {t['static_24h_missed_defectives']} defectives (datasheet only)")
     print("\n2. Drift Prediction Accuracy  (MAE vs hidden Value_168h)")
     print(f"   IDDQ                   {d['iddq_mae']:.4f} µA   (linear extrap {d['iddq_extrap_mae']:.4f})")

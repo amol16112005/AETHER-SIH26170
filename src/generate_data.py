@@ -19,11 +19,44 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.config import DATA_DIR, N_LOTS, PARAM_META, PARTS_PER_LOT, RANDOM_STATE, TIMES_H
+from src.config import (
+    DATA_DIR,
+    N_LOTS,
+    PARAM_META,
+    PARTS_PER_LOT,
+    RANDOM_STATE,
+    TCOEFF_COLD_COL,
+    TIMES_H,
+)
 
 
 def _clip_positive(values: np.ndarray, floor: float) -> np.ndarray:
     return np.maximum(values, floor)
+
+
+def _datasheet_caps() -> dict[str, float]:
+    caps: dict[str, float] = {}
+    for param, meta in PARAM_META.items():
+        caps[f"datasheet_{param}_max"] = float(meta["datasheet_max"])
+        if "datasheet_min" in meta:
+            caps[f"datasheet_{param}_min"] = float(meta["datasheet_min"])
+    return caps
+
+
+def _static_fail(row: dict) -> bool:
+    for param, meta in PARAM_META.items():
+        lo = meta.get("datasheet_min")
+        hi = meta["datasheet_max"]
+        for t in TIMES_H:
+            key = f"{param}_{t}h"
+            if key not in row:
+                continue
+            value = float(row[key])
+            if value > hi:
+                return True
+            if lo is not None and value < float(lo):
+                return True
+    return False
 
 
 def _series(v0: np.ndarray, lin: np.ndarray, quad: np.ndarray, noise: float, rng: np.random.Generator) -> dict[int, np.ndarray]:
@@ -53,14 +86,21 @@ def generate_burnin_dataset(
         # Process corner shifts the lot centroid. Fast silicon leaks more and switches sooner.
         if corner == "fast":
             iddq_mean, ileak_mean, tpd_mean = 14.5, 13.2, 3.6
+            vth_mean, idsat_mean, irev_mean = 0.44, 16.0, 2.4
         elif corner == "slow":
             iddq_mean, ileak_mean, tpd_mean = 8.4, 7.4, 6.1
+            vth_mean, idsat_mean, irev_mean = 0.62, 8.2, 1.2
         else:
             iddq_mean, ileak_mean, tpd_mean = 11.0, 10.0, 4.7
+            vth_mean, idsat_mean, irev_mean = 0.52, 12.0, 1.8
 
         iddq_mean *= float(rng.uniform(0.92, 1.08))
         ileak_mean *= float(rng.uniform(0.92, 1.08))
         tpd_mean *= float(rng.uniform(0.95, 1.05))
+        extra_rng = np.random.default_rng(seed + 17_000 + lot_i)
+        vth_mean *= float(extra_rng.uniform(0.97, 1.03))
+        idsat_mean *= float(extra_rng.uniform(0.94, 1.06))
+        irev_mean *= float(extra_rng.uniform(0.92, 1.08))
 
         defect_p = 0.18 if dirty else 0.07
         kinds = rng.choice(
@@ -80,6 +120,17 @@ def generate_burnin_dataset(
         ileak_quad = rng.normal(0.0, 5e-8, size=n)
         tpd_quad = rng.normal(0.0, 1.5e-8, size=n)
 
+        vth_v0 = extra_rng.normal(vth_mean, 0.035 * vth_mean, size=n)
+        idsat_v0 = extra_rng.normal(idsat_mean, 0.08 * idsat_mean, size=n)
+        irev_v0 = extra_rng.normal(irev_mean, 0.14 * irev_mean, size=n)
+        vth_lin = extra_rng.normal(0.00008, 0.00002, size=n)
+        idsat_lin = extra_rng.normal(-0.00016, 0.00004, size=n)
+        irev_lin = extra_rng.normal(0.00035, 0.00008, size=n)
+        vth_quad = extra_rng.normal(0.0, 1.2e-8, size=n)
+        idsat_quad = extra_rng.normal(0.0, 2e-8, size=n)
+        irev_quad = extra_rng.normal(0.0, 4e-8, size=n)
+        iddq_factor = np.clip(extra_rng.normal(5.2, 0.35, size=n), 3.8, 7.0)
+
         for i, kind in enumerate(kinds):
             if kind == "maverick":
                 # Offset 4–7 robust-σ equivalent, still below datasheet at t=0.
@@ -87,21 +138,43 @@ def generate_burnin_dataset(
                 ileak_v0[i] = min(PARAM_META["ileak"]["datasheet_max"] * 0.92, ileak_mean * rng.uniform(3.2, 4.6))
                 if rng.random() < 0.5:
                     tpd_v0[i] = min(PARAM_META["tpd"]["datasheet_max"] * 0.85, tpd_mean * rng.uniform(1.45, 1.85))
+                if extra_rng.random() < 0.5:
+                    vth_v0[i] = min(PARAM_META["vth"]["datasheet_max"] * 0.92, vth_mean * extra_rng.uniform(1.28, 1.48))
+                else:
+                    vth_v0[i] = max(PARAM_META["vth"]["datasheet_min"] * 1.08, vth_mean * extra_rng.uniform(0.58, 0.72))
+                idsat_v0[i] = max(PARAM_META["idsat"]["datasheet_min"] * 1.12, idsat_mean * extra_rng.uniform(0.48, 0.62))
+                irev_v0[i] = min(PARAM_META["irev"]["datasheet_max"] * 0.90, irev_mean * extra_rng.uniform(4.2, 6.0))
+                iddq_factor[i] = extra_rng.uniform(1.15, 2.05)
             elif kind == "latent_drift":
                 iddq_lin[i] = rng.uniform(0.0018, 0.0036)
                 ileak_lin[i] = rng.uniform(0.0020, 0.0040)
                 tpd_lin[i] = rng.uniform(0.0007, 0.0014)
+                vth_lin[i] = extra_rng.uniform(0.00055, 0.00105)
+                idsat_lin[i] = extra_rng.uniform(-0.0022, -0.0011)
+                irev_lin[i] = extra_rng.uniform(0.0020, 0.0038)
+                iddq_factor[i] = extra_rng.uniform(2.8, 4.2)
             elif kind == "runaway":
                 iddq_lin[i] = rng.uniform(0.0012, 0.0024)
                 ileak_lin[i] = rng.uniform(0.0014, 0.0028)
                 tpd_lin[i] = rng.uniform(0.0005, 0.0011)
+                vth_lin[i] = extra_rng.uniform(0.0004, 0.00085)
+                idsat_lin[i] = extra_rng.uniform(-0.0018, -0.0009)
+                irev_lin[i] = extra_rng.uniform(0.0014, 0.0028)
                 iddq_quad[i] = rng.uniform(1.2e-5, 2.4e-5)
                 ileak_quad[i] = rng.uniform(8e-6, 1.8e-5)
                 tpd_quad[i] = rng.uniform(2.5e-6, 6e-6)
+                vth_quad[i] = extra_rng.uniform(2e-6, 5e-6)
+                idsat_quad[i] = extra_rng.uniform(-8e-6, -3e-6)
+                irev_quad[i] = extra_rng.uniform(6e-6, 1.4e-5)
+                iddq_factor[i] = extra_rng.uniform(2.6, 4.0)
 
         iddq = _series(iddq_v0, iddq_lin, iddq_quad, 0.16, rng)
         ileak = _series(ileak_v0, ileak_lin, ileak_quad, 0.09, rng)
         tpd = _series(tpd_v0, tpd_lin, tpd_quad, 0.025, rng)
+        vth = _series(vth_v0, vth_lin, vth_quad, 0.0025, extra_rng)
+        idsat = _series(idsat_v0, idsat_lin, idsat_quad, 0.06, extra_rng)
+        irev = _series(irev_v0, irev_lin, irev_quad, 0.04, extra_rng)
+        iddq_25c = _clip_positive(iddq_v0 / iddq_factor + extra_rng.normal(0.0, 0.05, size=n), 0.02)
 
         lot_id = f"LOT{lot_i + 1:02d}"
         for i in range(n):
@@ -113,24 +186,17 @@ def generate_burnin_dataset(
                 "defect_type": kinds[i],
                 "is_defective": kinds[i] != "healthy",
                 "sih_example": False,
-                "datasheet_iddq_max": PARAM_META["iddq"]["datasheet_max"],
-                "datasheet_ileak_max": PARAM_META["ileak"]["datasheet_max"],
-                "datasheet_tpd_max": PARAM_META["tpd"]["datasheet_max"],
+                **_datasheet_caps(),
             }
             for t in TIMES_H:
                 row[f"iddq_{t}h"] = float(iddq[t][i])
                 row[f"ileak_{t}h"] = float(ileak[t][i])
                 row[f"tpd_{t}h"] = float(tpd[t][i])
-
-            static_fail = False
-            for t in TIMES_H:
-                if row[f"iddq_{t}h"] > PARAM_META["iddq"]["datasheet_max"]:
-                    static_fail = True
-                if row[f"ileak_{t}h"] > PARAM_META["ileak"]["datasheet_max"]:
-                    static_fail = True
-                if row[f"tpd_{t}h"] > PARAM_META["tpd"]["datasheet_max"]:
-                    static_fail = True
-            row["static_fail"] = static_fail
+                row[f"vth_{t}h"] = float(vth[t][i])
+                row[f"idsat_{t}h"] = float(idsat[t][i])
+                row[f"irev_{t}h"] = float(irev[t][i])
+            row[TCOEFF_COLD_COL] = float(iddq_25c[i])
+            row["static_fail"] = _static_fail(row)
             rows.append(row)
 
     df = pd.DataFrame(rows)
@@ -144,15 +210,22 @@ def textbook_maverick_lot(seed: int = 17) -> pd.DataFrame:
     rng = np.random.default_rng(seed)
     n = 200
     iddq_mean, ileak_mean, tpd_mean = 11.0, 10.0, 4.7
+    vth_mean, idsat_mean, irev_mean = 0.52, 12.0, 1.8
     kinds = np.array(["healthy"] * n, dtype=object)
     kinds[44] = "maverick"
 
     iddq_v0 = rng.normal(iddq_mean, 0.12 * iddq_mean, size=n)
     ileak_v0 = rng.normal(ileak_mean, 0.12 * ileak_mean, size=n)
     tpd_v0 = rng.normal(tpd_mean, 0.07 * tpd_mean, size=n)
+    vth_v0 = rng.normal(vth_mean, 0.035 * vth_mean, size=n)
+    idsat_v0 = rng.normal(idsat_mean, 0.08 * idsat_mean, size=n)
+    irev_v0 = rng.normal(irev_mean, 0.12 * irev_mean, size=n)
     iddq_lin = rng.normal(0.00028, 0.00007, size=n)
     ileak_lin = rng.normal(0.00032, 0.00008, size=n)
     tpd_lin = rng.normal(0.00012, 0.00003, size=n)
+    vth_lin = rng.normal(0.00008, 0.00002, size=n)
+    idsat_lin = rng.normal(-0.00016, 0.00004, size=n)
+    irev_lin = rng.normal(0.00035, 0.00008, size=n)
     zeros = np.zeros(n)
 
     ileak_v0[44] = 45.0
@@ -161,10 +234,15 @@ def textbook_maverick_lot(seed: int = 17) -> pd.DataFrame:
     iddq = _series(iddq_v0, iddq_lin, zeros, 0.16, rng)
     ileak = _series(ileak_v0, ileak_lin, zeros, 0.09, rng)
     tpd = _series(tpd_v0, tpd_lin, zeros, 0.025, rng)
+    vth = _series(vth_v0, vth_lin, zeros, 0.0025, rng)
+    idsat = _series(idsat_v0, idsat_lin, zeros, 0.06, rng)
+    irev = _series(irev_v0, irev_lin, zeros, 0.04, rng)
     ileak[0][44] = 45.00
     ileak[24][44] = 45.32
     ileak[96][44] = 45.90
     ileak[168][44] = 46.55
+    iddq_factor = np.clip(rng.normal(5.2, 0.25, size=n), 4.4, 6.2)
+    iddq_25c = _clip_positive(iddq_v0 / iddq_factor + rng.normal(0.0, 0.04, size=n), 0.02)
 
     rows: list[dict] = []
     for i in range(n):
@@ -176,19 +254,17 @@ def textbook_maverick_lot(seed: int = 17) -> pd.DataFrame:
             "defect_type": kinds[i],
             "is_defective": kinds[i] != "healthy",
             "sih_example": i == 44,
-            "datasheet_iddq_max": PARAM_META["iddq"]["datasheet_max"],
-            "datasheet_ileak_max": PARAM_META["ileak"]["datasheet_max"],
-            "datasheet_tpd_max": PARAM_META["tpd"]["datasheet_max"],
+            **_datasheet_caps(),
         }
         for t in TIMES_H:
             row[f"iddq_{t}h"] = float(iddq[t][i])
             row[f"ileak_{t}h"] = float(ileak[t][i])
             row[f"tpd_{t}h"] = float(tpd[t][i])
-        row["static_fail"] = (
-            row["iddq_168h"] > PARAM_META["iddq"]["datasheet_max"]
-            or row["ileak_168h"] > PARAM_META["ileak"]["datasheet_max"]
-            or row["tpd_168h"] > PARAM_META["tpd"]["datasheet_max"]
-        )
+            row[f"vth_{t}h"] = float(vth[t][i])
+            row[f"idsat_{t}h"] = float(idsat[t][i])
+            row[f"irev_{t}h"] = float(irev[t][i])
+        row[TCOEFF_COLD_COL] = float(iddq_25c[i])
+        row["static_fail"] = _static_fail(row)
         rows.append(row)
     return pd.DataFrame(rows)
 

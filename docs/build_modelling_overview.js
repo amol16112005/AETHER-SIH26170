@@ -325,7 +325,7 @@ async function main() {
           [
             ["Lot", "All lots, then every lot_id in the screened table", "Filters Lot board charts/table and the QA inspector component list. KPIs stay on held-out test."],
             ["Split", "All splits, train, val, test (default test)", "Same filter as Lot. Test is the honest view."],
-            ["Parameter", "Standby current (IDDQ), Leakage current, Propagation delay", "Selects the Lot board scatter axes and the QA inspector what-if slider. Time series always show all three parameters."],
+            ["Parameter", "IDDQ, Leakage, tpd, plus VTH / IDSAT / reverse leakage when present", "Selects the Lot board scatter axes and the QA inspector what-if slider. Time series show every parameter the lot has."],
           ],
           [1800, 3200, 4026],
         ),
@@ -340,7 +340,8 @@ async function main() {
             ["Latent catch rate", "100.0%", "Defectives that still pass datasheet limits.", "Caught latent_escape parts / all latent_escape parts."],
             ["Reject precision", "98.7%", "Of 24 h REJECT calls, how many were truly defective.", "is_defective among decision = REJECT."],
             ["IDDQ 168 h MAE", "0.51 µA", "Module B prediction vs hidden ground truth.", "mean |pred_iddq_168h − iddq_168h| on the test lots."],
-            ["Chamber hours saved", "10,800", "Only from 24 h REJECT — healthy flight parts still finish burn-in.", "144 h × number of early REJECT parts."],
+            ["VTH / IDSAT / IREV MAE", "0.007 V / 0.20 mA / 0.10 µA", "Optional extras; same 0 h / 24 h → 168 h stack.", "Shown when the ATE log has those columns."],
+            ["Chamber hours saved", "10,944", "Only from 24 h REJECT — healthy flight parts still finish burn-in.", "144 h × number of early REJECT parts."],
           ],
           [1700, 1700, 2813, 2813],
         ),
@@ -441,7 +442,7 @@ async function main() {
 
         h2("4.1 G1 — Decision donut"),
         p("Data: value_counts of decision on the current filter. Colours from DECISION_COLOR. textinfo is label+percent. Centre annotation: 24 h. Legend is hidden; labels sit on the ring."),
-        p("How to read it: the hole is the 24 h gate. A healthy screening line is a large green ring (finish burn-in), a thin amber wedge (96 h confirmation), and a small red wedge (pull now). On the held-out lots that the KPI strip refers to, the mix is 1,172 PASS (80.9%), 202 HOLD (13.9%), 75 REJECT (5.2%)."),
+        p("How to read it: the hole is the 24 h gate. A healthy screening line is a large green ring (finish burn-in), a thin amber wedge (96 h confirmation), and a small red wedge (pull now). On the held-out lots that the KPI strip refers to, the mix is 1,175 PASS (81.1%), 198 HOLD (13.7%), 76 REJECT (5.2%)."),
         figure("decision_donut.png", 714, 683, 360, "Decision donut",
           "Donut chart of PASS, HOLD, and REJECT on held-out lots."),
         caption("Figure 2. Graph G1 as shown on Lot board for Split = test, All lots."),
@@ -643,7 +644,7 @@ async function main() {
         ),
         eqBox("hours_saved = 144 · 1[action = REJECT]"),
         gap(),
-        p("144 h is 168 − 24. PASS and HOLD recover no chamber time, because those parts stay in the oven. That is why the KPI 'Chamber hours saved' is 10,800 = 144 × 75 on the test lots, not a claim that healthy flight silicon was pulled early."),
+        p("144 h is 168 − 24. PASS and HOLD recover no chamber time, because those parts stay in the oven. That is why the KPI 'Chamber hours saved' is 10,944 = 144 × 76 on the test lots, not a claim that healthy flight silicon was pulled early."),
 
         h2("5.8 Cost used during design (not a loss inside the estimators)"),
         p("Isolation Forest, Ridge, and HGB are not trained on the screening cost. The cost is the language used to justify recall-first thresholding:"),
@@ -714,7 +715,7 @@ async function main() {
           [
             ["Train", "2478", "205", "100%", "0", "126 / 297 / 2055", "100%", "18,144"],
             ["Val", "1218", "94", "100%", "0", "66 / 170 / 982", "100%", "9,504"],
-            ["Test (on site)", "1449", "102", "100%", "0", "75 / 202 / 1172", "98.7%", "10,800"],
+            ["Test (on site)", "1449", "102", "100%", "0", "76 / 198 / 1175", "98.7%", "10,944"],
           ],
           [1400, 900, 1200, 1000, 700, 1800, 1200, 826],
         ),

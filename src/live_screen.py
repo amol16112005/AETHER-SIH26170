@@ -7,18 +7,40 @@ from typing import Any
 
 import pandas as pd
 
-from src.config import DATA_DIR, PARAM_META, PARAMS
+from src.config import DATA_DIR, OPTIONAL_PARAMS, PARAM_META, PARAMS, REQUIRED_PARAMS, TCOEFF_COLD_COL
 from src.features import attach_lot_relative, lot_stats
 from src.pipeline import ScreeningBundle, apply_models, drop_model_outputs, enrich
 
 MEASURE_TIMES = (0, 24)
-REQUIRED_MEASURES = [f"{param}_{t}h" for param in PARAMS for t in MEASURE_TIMES]
+REQUIRED_MEASURES = [f"{param}_{t}h" for param in REQUIRED_PARAMS for t in MEASURE_TIMES]
+# Live editor extras: VTH, IDSAT, reverse leakage. Room-temp IDDQ (iddq_25c) is
+# accepted on ingest for IDDQ/T but is not a separate live parameter — hot IDDQ
+# is already iddq_0h / iddq_24h.
+OPTIONAL_EARLY = [f"{param}_{t}h" for param in OPTIONAL_PARAMS for t in MEASURE_TIMES]
+OPTIONAL_TCOEFF = [TCOEFF_COLD_COL]
 OPTIONAL_LATER = [f"{param}_{t}h" for param in PARAMS for t in (96, 168)]
 IDENTITY_COLS = ("part_id", "lot_id")
-INPUT_COLS = list(IDENTITY_COLS) + REQUIRED_MEASURES + OPTIONAL_LATER
-_CANON_COLS = INPUT_COLS + ["process_corner", *[f"datasheet_{param}_max" for param in PARAMS]]
+_DATASHEET_COLS = [
+    f"datasheet_{param}_max" for param in PARAMS
+] + [
+    f"datasheet_{param}_min" for param in PARAMS if "datasheet_min" in PARAM_META[param]
+]
+INPUT_COLS = list(IDENTITY_COLS) + REQUIRED_MEASURES + OPTIONAL_EARLY + OPTIONAL_TCOEFF + OPTIONAL_LATER
+_CANON_COLS = INPUT_COLS + ["process_corner", *_DATASHEET_COLS]
 MIN_LOT_FOR_STABLE_PAT = 8
 _BLANK_TOKENS = {"", "nan", "None"}
+
+def _extra_readings(wobble: int = 0) -> dict[str, float]:
+    """Lot-typical extras so Screen my data matches the canned lot board."""
+    return {
+        "vth_0h": round(0.520 + wobble * 0.006, 3),
+        "vth_24h": round(0.522 + wobble * 0.006, 3),
+        "idsat_0h": round(12.00 + wobble * 0.10, 2),
+        "idsat_24h": round(11.96 + wobble * 0.10, 2),
+        "irev_0h": round(1.80 + wobble * 0.03, 2),
+        "irev_24h": round(1.82 + wobble * 0.03, 2),
+    }
+
 
 NOMINAL_HEALTHY = {
     "iddq_0h": 11.00,
@@ -27,6 +49,7 @@ NOMINAL_HEALTHY = {
     "ileak_24h": 10.12,
     "tpd_0h": 4.70,
     "tpd_24h": 4.72,
+    **_extra_readings(0),
 }
 TEXTBOOK_MAVERICK = {
     "iddq_0h": 13.10,
@@ -35,6 +58,7 @@ TEXTBOOK_MAVERICK = {
     "ileak_24h": 45.32,
     "tpd_0h": 4.70,
     "tpd_24h": 4.73,
+    **_extra_readings(0),
 }
 
 
@@ -59,19 +83,23 @@ def _csv_bytes(frame: pd.DataFrame) -> bytes:
 
 def template_frame() -> pd.DataFrame:
     """A small lot the inspector can download, edit, and re-upload."""
-    rows = [
-        {"part_id": "LIVE-0001", "lot_id": "LIVELOT", "iddq_0h": 11.05, "iddq_24h": 11.18, "ileak_0h": 10.10, "ileak_24h": 10.22, "tpd_0h": 4.70, "tpd_24h": 4.72},
-        {"part_id": "LIVE-0002", "lot_id": "LIVELOT", "iddq_0h": 10.82, "iddq_24h": 10.91, "ileak_0h": 9.88, "ileak_24h": 9.97, "tpd_0h": 4.65, "tpd_24h": 4.67},
-        {"part_id": "LIVE-0003", "lot_id": "LIVELOT", "iddq_0h": 11.40, "iddq_24h": 11.55, "ileak_0h": 10.35, "ileak_24h": 10.48, "tpd_0h": 4.58, "tpd_24h": 4.60},
-        {"part_id": "LIVE-0004", "lot_id": "LIVELOT", "iddq_0h": 10.95, "iddq_24h": 11.04, "ileak_0h": 9.72, "ileak_24h": 9.80, "tpd_0h": 4.81, "tpd_24h": 4.83},
-        {"part_id": "LIVE-0005", "lot_id": "LIVELOT", "iddq_0h": 11.22, "iddq_24h": 11.30, "ileak_0h": 10.05, "ileak_24h": 10.14, "tpd_0h": 4.69, "tpd_24h": 4.71},
-        {"part_id": "LIVE-0006", "lot_id": "LIVELOT", "iddq_0h": 10.70, "iddq_24h": 10.78, "ileak_0h": 9.95, "ileak_24h": 10.03, "tpd_0h": 4.74, "tpd_24h": 4.76},
-        {"part_id": "LIVE-0007", "lot_id": "LIVELOT", "iddq_0h": 11.15, "iddq_24h": 11.27, "ileak_0h": 10.28, "ileak_24h": 10.40, "tpd_0h": 4.62, "tpd_24h": 4.64},
-        {"part_id": "LIVE-0008", "lot_id": "LIVELOT", "iddq_0h": 10.88, "iddq_24h": 10.96, "ileak_0h": 10.12, "ileak_24h": 10.20, "tpd_0h": 4.77, "tpd_24h": 4.79},
-        {"part_id": "LIVE-0009", "lot_id": "LIVELOT", "iddq_0h": 11.08, "iddq_24h": 11.19, "ileak_0h": 9.84, "ileak_24h": 9.93, "tpd_0h": 4.66, "tpd_24h": 4.68},
-        # In-spec maverick: ~45 µA leakage vs lot ~10 µA, datasheet 50 µA.
-        {"part_id": "LIVE-0010", "lot_id": "LIVELOT", "iddq_0h": 13.10, "iddq_24h": 13.40, "ileak_0h": 45.00, "ileak_24h": 45.32, "tpd_0h": 4.70, "tpd_24h": 4.73},
+    cores = [
+        {"part_id": "LIVE-0001", "lot_id": "LIVELOT", "iddq_0h": 11.05, "iddq_24h": 11.18, "ileak_0h": 10.10, "ileak_24h": 10.22, "tpd_0h": 4.70, "tpd_24h": 4.72, "wobble": 1},
+        {"part_id": "LIVE-0002", "lot_id": "LIVELOT", "iddq_0h": 10.82, "iddq_24h": 10.91, "ileak_0h": 9.88, "ileak_24h": 9.97, "tpd_0h": 4.65, "tpd_24h": 4.67, "wobble": -2},
+        {"part_id": "LIVE-0003", "lot_id": "LIVELOT", "iddq_0h": 11.40, "iddq_24h": 11.55, "ileak_0h": 10.35, "ileak_24h": 10.48, "tpd_0h": 4.58, "tpd_24h": 4.60, "wobble": 3},
+        {"part_id": "LIVE-0004", "lot_id": "LIVELOT", "iddq_0h": 10.95, "iddq_24h": 11.04, "ileak_0h": 9.72, "ileak_24h": 9.80, "tpd_0h": 4.81, "tpd_24h": 4.83, "wobble": -1},
+        {"part_id": "LIVE-0005", "lot_id": "LIVELOT", "iddq_0h": 11.22, "iddq_24h": 11.30, "ileak_0h": 10.05, "ileak_24h": 10.14, "tpd_0h": 4.69, "tpd_24h": 4.71, "wobble": 2},
+        {"part_id": "LIVE-0006", "lot_id": "LIVELOT", "iddq_0h": 10.70, "iddq_24h": 10.78, "ileak_0h": 9.95, "ileak_24h": 10.03, "tpd_0h": 4.74, "tpd_24h": 4.76, "wobble": -3},
+        {"part_id": "LIVE-0007", "lot_id": "LIVELOT", "iddq_0h": 11.15, "iddq_24h": 11.27, "ileak_0h": 10.28, "ileak_24h": 10.40, "tpd_0h": 4.62, "tpd_24h": 4.64, "wobble": 1},
+        {"part_id": "LIVE-0008", "lot_id": "LIVELOT", "iddq_0h": 10.88, "iddq_24h": 10.96, "ileak_0h": 10.12, "ileak_24h": 10.20, "tpd_0h": 4.77, "tpd_24h": 4.79, "wobble": 0},
+        {"part_id": "LIVE-0009", "lot_id": "LIVELOT", "iddq_0h": 11.08, "iddq_24h": 11.19, "ileak_0h": 9.84, "ileak_24h": 9.93, "tpd_0h": 4.66, "tpd_24h": 4.68, "wobble": -1},
+        # In-spec maverick: ~45 µA leakage vs lot ~10 µA, datasheet 50 µA. Extras stay with the lot.
+        {"part_id": "LIVE-0010", "lot_id": "LIVELOT", "iddq_0h": 13.10, "iddq_24h": 13.40, "ileak_0h": 45.00, "ileak_24h": 45.32, "tpd_0h": 4.70, "tpd_24h": 4.73, "wobble": 0},
     ]
+    rows: list[dict] = []
+    for rec in cores:
+        wobble = int(rec.pop("wobble"))
+        rows.append({**rec, **_extra_readings(wobble)})
     for i in range(11, 26):
         wobble = ((i * 3) % 9) - 4
         rows.append(
@@ -84,6 +112,7 @@ def template_frame() -> pd.DataFrame:
                 "ileak_24h": round(10.12 + wobble * 0.07, 2),
                 "tpd_0h": round(4.70 + wobble * 0.02, 2),
                 "tpd_24h": round(4.72 + wobble * 0.02, 2),
+                **_extra_readings(wobble),
             }
         )
     return pd.DataFrame(rows)
@@ -94,9 +123,15 @@ def blank_frame(n: int = 6) -> pd.DataFrame:
         {
             "part_id": [f"LIVE-{i + 1:04d}" for i in range(n)],
             "lot_id": ["LIVELOT"] * n,
-            **{col: [float("nan")] * n for col in REQUIRED_MEASURES},
+            **{col: [float("nan")] * n for col in REQUIRED_MEASURES + OPTIONAL_EARLY},
         }
     )
+
+
+def _without_tcoeff(df: pd.DataFrame) -> pd.DataFrame:
+    """iddq_25c is not a live parameter — hot IDDQ is already iddq_0h / iddq_24h."""
+    drop = [c for c in df.columns if str(c).strip().lower() in {TCOEFF_COLD_COL, "iddq_25c", "iddq @ 25"}]
+    return df.drop(columns=drop, errors="ignore") if drop else df
 
 
 def for_editor(df: pd.DataFrame) -> pd.DataFrame:
@@ -104,10 +139,10 @@ def for_editor(df: pd.DataFrame) -> pd.DataFrame:
     work = pd.DataFrame(index=range(0 if df is None else len(df)))
     if df is None or df.empty:
         return blank_frame(6)
-    src = df.reset_index(drop=True)
+    src = _without_tcoeff(df.reset_index(drop=True))
     work["part_id"] = src["part_id"].astype(str) if "part_id" in src.columns else [f"LIVE-{i + 1:04d}" for i in range(len(src))]
     work["lot_id"] = src["lot_id"].astype(str) if "lot_id" in src.columns else "LIVELOT"
-    for col in REQUIRED_MEASURES:
+    for col in REQUIRED_MEASURES + OPTIONAL_EARLY:
         work[col] = pd.to_numeric(src[col], errors="coerce") if col in src.columns else float("nan")
     return work
 
@@ -121,10 +156,13 @@ def lotsih_demo_frame() -> pd.DataFrame:
 
     96 h and 168 h are omitted on purpose: they are not inference inputs.
     """
-    columns = ["part_id", "lot_id", *REQUIRED_MEASURES]
+    columns = ["part_id", "lot_id", *REQUIRED_MEASURES, *OPTIONAL_EARLY]
     lot = pd.read_csv(DATA_DIR / "burnin_parts.csv")
-    lot = lot.loc[lot["lot_id"] == "LOTSIH", columns].copy()
-    for col in REQUIRED_MEASURES:
+    keep = [c for c in columns if c in lot.columns]
+    lot = lot.loc[lot["lot_id"] == "LOTSIH", keep].copy()
+    for col in keep:
+        if col in IDENTITY_COLS:
+            continue
         lot[col] = lot[col].astype(float).round(3)
     return lot.reset_index(drop=True)
 
@@ -161,6 +199,12 @@ def _read_csv_table(data: bytes | str) -> pd.DataFrame:
         raise LiveScreenError(f"Could not read CSV: {exc}") from exc
 
 
+def _has_numeric(frame: pd.DataFrame, col: str) -> bool:
+    if col not in frame.columns:
+        return False
+    return bool(pd.to_numeric(frame[col], errors="coerce").notna().any())
+
+
 def complete_rows(df: pd.DataFrame) -> pd.DataFrame:
     if df is None or df.empty:
         return pd.DataFrame(columns=list(IDENTITY_COLS) + REQUIRED_MEASURES + OPTIONAL_LATER)
@@ -172,10 +216,17 @@ def complete_rows(df: pd.DataFrame) -> pd.DataFrame:
             + ", ".join(missing)
             + ". Need part_id, lot_id (optional) and 0 h / 24 h for IDDQ, leakage, and tpd."
         )
+    extra_early: list[str] = []
+    for param in OPTIONAL_PARAMS:
+        c0, c24 = f"{param}_0h", f"{param}_24h"
+        if _has_numeric(work, c0) and _has_numeric(work, c24):
+            extra_early.extend([c0, c24])
+    if _has_numeric(work, TCOEFF_COLD_COL):
+        extra_early.append(TCOEFF_COLD_COL)
     for col in OPTIONAL_LATER:
         if col not in work.columns:
             work[col] = float("nan")
-    for col in REQUIRED_MEASURES + OPTIONAL_LATER:
+    for col in REQUIRED_MEASURES + extra_early + OPTIONAL_LATER:
         work[col] = pd.to_numeric(work[col], errors="coerce")
     mask = work[REQUIRED_MEASURES].notna().all(axis=1)
     out = work.loc[mask].copy()
@@ -203,19 +254,28 @@ def complete_rows(df: pd.DataFrame) -> pd.DataFrame:
             out[cap] = PARAM_META[param]["datasheet_max"]
         else:
             out[cap] = pd.to_numeric(out[cap], errors="coerce").fillna(PARAM_META[param]["datasheet_max"])
+        lo = PARAM_META[param].get("datasheet_min")
+        if lo is not None:
+            lo_col = f"datasheet_{param}_min"
+            if lo_col not in out.columns:
+                out[lo_col] = float(lo)
+            else:
+                out[lo_col] = pd.to_numeric(out[lo_col], errors="coerce").fillna(float(lo))
     if "process_corner" not in out.columns:
         out["process_corner"] = "unknown"
     else:
         out["process_corner"] = out["process_corner"].map(
             lambda v: "unknown" if _is_blank(v) else str(v).strip()
         )
+    extra_keep = [col for col in extra_early if col in out.columns]
     keep = [
         "part_id",
         "lot_id",
         "process_corner",
         *REQUIRED_MEASURES,
+        *extra_keep,
         *OPTIONAL_LATER,
-        *[f"datasheet_{param}_max" for param in PARAMS],
+        *_DATASHEET_COLS,
     ]
     return out.loc[:, keep].reset_index(drop=True)
 
@@ -232,7 +292,7 @@ def parse_live_upload(data: bytes | str) -> pd.DataFrame:
     drop = [col for col in OPTIONAL_LATER if col not in raw_cols]
     if "process_corner" not in raw_cols:
         drop.append("process_corner")
-    drop.extend(f"datasheet_{param}_max" for param in PARAMS if f"datasheet_{param}_max" not in raw_cols)
+    drop.extend(col for col in _DATASHEET_COLS if col not in raw_cols)
     return live.drop(columns=drop)
 
 
@@ -324,7 +384,7 @@ def screen_one_part(
     ref = reference_lot.copy()
     if ref.empty:
         raise LiveScreenError("Reference lot is empty.")
-    needed = [f"{param}_{t}h" for param in PARAMS for t in MEASURE_TIMES]
+    needed = [f"{param}_{t}h" for param in REQUIRED_PARAMS for t in MEASURE_TIMES]
     missing_ref = [c for c in needed if c not in ref.columns]
     if missing_ref:
         raise LiveScreenError("Reference lot is missing " + ", ".join(missing_ref))
@@ -337,8 +397,15 @@ def screen_one_part(
         if measurements.get(col) is None or pd.isna(measurements.get(col)):
             raise LiveScreenError(f"Enter a value for {col}.")
         row[col] = float(measurements[col])
+    for col in OPTIONAL_EARLY:
+        value = measurements.get(col)
+        if value is None or (isinstance(value, float) and pd.isna(value)) or col not in ref.columns:
+            continue
+        row[col] = float(value)
     for param in PARAMS:
         row[f"datasheet_{param}_max"] = PARAM_META[param]["datasheet_max"]
+        if "datasheet_min" in PARAM_META[param]:
+            row[f"datasheet_{param}_min"] = PARAM_META[param]["datasheet_min"]
     part = pd.DataFrame([row])
     stats = stats.copy()
     stats["lot_id"] = part["lot_id"].iloc[0]

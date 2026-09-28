@@ -5,7 +5,16 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from src.config import FN_COST, FP_COST, HOLD_DEFECT_COST, HOLD_HEALTHY_COST, MIN_RECALL, PARAMS
+from src.config import (
+    FN_COST,
+    FP_COST,
+    HOLD_DEFECT_COST,
+    HOLD_HEALTHY_COST,
+    MIN_RECALL,
+    OPTIONAL_PARAMS,
+    PARAM_META,
+    REQUIRED_PARAMS,
+)
 
 
 def screening_cost(y_true: np.ndarray, pred: np.ndarray) -> float:
@@ -67,18 +76,36 @@ def calibrate_thresholds(y_true: np.ndarray, scores: np.ndarray) -> tuple[float,
     return t_hold, t_rej
 
 
-def fuse_decision(df: pd.DataFrame, t_hold: float, t_rej: float) -> pd.DataFrame:
-    drift_flag = np.zeros(len(df), dtype=bool)
-    drift_reasons = [[] for _ in range(len(df))]
-    for param in PARAMS:
-        safety = df[f"{param}_exceeds_safety"].to_numpy()
-        sheet = df[f"{param}_exceeds_datasheet"].to_numpy()
-        drift_flag |= safety | sheet
+def _drift_mask(df: pd.DataFrame, params: tuple[str, ...]) -> tuple[np.ndarray, list[list[str]]]:
+    flag = np.zeros(len(df), dtype=bool)
+    reasons = [[] for _ in range(len(df))]
+    for param in params:
+        safety_col = f"{param}_exceeds_safety"
+        sheet_col = f"{param}_exceeds_datasheet"
+        if safety_col not in df.columns or sheet_col not in df.columns:
+            continue
+        safety = df[safety_col].to_numpy()
+        sheet = df[sheet_col].to_numpy()
+        flag |= safety | sheet
+        aging = PARAM_META[param].get("aging", "up")
         for i in range(len(df)):
             if sheet[i]:
-                drift_reasons[i].append(f"predicted {param}@168h exceeds 90% of datasheet")
+                reasons[i].append(f"predicted {param}@168h exceeds 90% of datasheet")
             elif safety[i]:
-                drift_reasons[i].append(f"predicted {param} drift exceeds healthy 95th-pct safety slope")
+                if aging == "down":
+                    reasons[i].append(f"predicted {param} drop exceeds healthy 5th-pct safety slope")
+                else:
+                    reasons[i].append(f"predicted {param} drift exceeds healthy 95th-pct safety slope")
+    return flag, reasons
+
+
+def fuse_decision(df: pd.DataFrame, t_hold: float, t_rej: float) -> pd.DataFrame:
+    # Core SIH observables decide HOLD/REJECT. Optional extras still PAT and
+    # still forecast; extra drift flags are inspector context only.
+    drift_flag, drift_reasons = _drift_mask(df, REQUIRED_PARAMS)
+    _, extra_reasons = _drift_mask(df, OPTIONAL_PARAMS)
+    for i, extra in enumerate(extra_reasons):
+        drift_reasons[i].extend(extra)
 
     score = df["outlier_score"].to_numpy() + 0.18 * drift_flag.astype(float)
     decisions: list[str] = []

@@ -13,3 +13,4 @@ venv/
 *.log
 .DS_Store
 node_modules/
+docs/sih_ppt/unpacked_aether/

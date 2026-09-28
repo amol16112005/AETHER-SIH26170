@@ -3,6 +3,7 @@ import pytest
 
 from src.live_screen import (
     OPTIONAL_LATER,
+    REQUIRED_MEASURES,
     LiveScreenError,
     complete_rows,
     ingest_ate_lot,
@@ -25,6 +26,11 @@ def test_editor_table_has_float_columns_not_none():
     blank = for_editor(blank_frame(3))
     assert blank["iddq_0h"].dtype.kind == "f"
     assert blank["ileak_24h"].isna().all()
+    assert "vth_0h" in blank.columns
+    assert "iddq_25c" not in blank.columns
+    assert blank["vth_0h"].isna().all()
+    leftover = pd.DataFrame({"part_id": ["A"], "lot_id": ["L"], "iddq_0h": [11.2], "iddq_25c": [2.1]})
+    assert "iddq_25c" not in for_editor(leftover).columns
     dirty = pd.DataFrame({"part_id": ["A"], "lot_id": ["L"], "iddq_0h": ["11.2"], "ileak_24h": [None]})
     clean = for_editor(dirty)
     assert clean["iddq_0h"].iloc[0] == pytest.approx(11.2)
@@ -36,7 +42,10 @@ def test_template_has_required_columns_and_one_maverick():
     live = complete_rows(df)
     assert len(live) == 25
     assert set(["iddq_0h", "ileak_24h", "tpd_0h"]).issubset(live.columns)
+    assert set(["vth_0h", "idsat_24h", "irev_0h"]).issubset(live.columns)
+    assert "iddq_25c" not in live.columns
     assert live["ileak_24h"].max() > 40
+    assert live["vth_0h"].between(0.4, 0.7).all()
 
 
 def test_parse_csv_is_case_insensitive():
@@ -172,6 +181,22 @@ def test_lotsih_demo_file_is_24h_only_and_includes_the_example():
     example = raw.loc[raw["part_id"] == "LOTSIH-0045"].iloc[0]
     assert example["ileak_24h"] == pytest.approx(45.32)
     assert raw["iddq_168h"].isna().all()
+
+
+def test_optional_extras_are_kept_and_core_only_csv_still_scores():
+    bundle = load_bundle()
+    core_only = template_frame()[["part_id", "lot_id", *REQUIRED_MEASURES]]
+    core = ingest_ate_lot(core_only.to_csv(index=False))
+    assert "vth_0h" not in core.columns
+    result, _ = score_incoming_lot(core, bundle)
+    assert result.loc[result["part_id"] == "LIVE-0010", "decision"].iloc[0] == "REJECT"
+
+    live = ingest_ate_lot(template_csv_bytes())
+    assert "vth_0h" in live.columns
+    assert "iddq_25c" not in live.columns
+    scored, _ = score_incoming_lot(live, bundle)
+    assert "pred_vth_168h" in scored.columns
+    assert scored.loc[scored["part_id"] == "LIVE-0010", "decision"].iloc[0] == "REJECT"
 
 
 def test_ingested_lot_scores_without_labels():

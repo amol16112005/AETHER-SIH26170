@@ -71,7 +71,13 @@ def _fit_one(train: pd.DataFrame, val: pd.DataFrame, param: str) -> DriftModel:
 
     healthy = train.loc[~train["is_defective"], f"{param}_168h"] - train.loc[~train["is_defective"], f"{param}_0h"]
     healthy_slope = (healthy / 168.0).to_numpy()
-    safety_slope = float(np.quantile(healthy_slope, 0.95)) if len(healthy_slope) else 0.0
+    aging = PARAM_META[param].get("aging", "up")
+    if len(healthy_slope) == 0:
+        safety_slope = 0.0
+    elif aging == "down":
+        safety_slope = float(np.quantile(healthy_slope, 0.05))
+    else:
+        safety_slope = float(np.quantile(healthy_slope, 0.95))
 
     return DriftModel(
         param=param,
@@ -93,6 +99,8 @@ def fit_drift_models(train: pd.DataFrame, val: pd.DataFrame) -> dict[str, DriftM
 def predict_drift(df: pd.DataFrame, models: dict[str, DriftModel]) -> pd.DataFrame:
     out = pd.DataFrame(index=df.index)
     for param, model in models.items():
+        if f"{param}_0h" not in df.columns or f"{param}_24h" not in df.columns:
+            continue
         X = drift_feature_frame(df, param)
         ridge_pred = model.ridge.predict(X)
         boost_pred = model.booster.predict(X)
@@ -100,13 +108,23 @@ def predict_drift(df: pd.DataFrame, models: dict[str, DriftModel]) -> pd.DataFra
         extrap = X["extrap_168"].to_numpy()
         v0 = df[f"{param}_0h"].to_numpy(dtype=float)
         slope_pred = (pred - v0) / 168.0
-        datasheet = PARAM_META[param]["datasheet_max"]
+        meta = PARAM_META[param]
+        datasheet = meta["datasheet_max"]
+        aging = meta.get("aging", "up")
+        lo = meta.get("datasheet_min")
+        if aging == "down":
+            exceeds_safety = slope_pred < (model.safety_slope * 1.5)
+        else:
+            exceeds_safety = slope_pred > (model.safety_slope * 1.5)
+        exceeds_sheet = pred > (0.90 * datasheet)
+        if lo is not None:
+            exceeds_sheet = exceeds_sheet | (pred < (1.10 * float(lo)))
         out[f"pred_{param}_168h"] = pred
         out[f"extrap_{param}_168h"] = extrap
         out[f"pred_{param}_slope"] = slope_pred
         out[f"{param}_safety_slope"] = model.safety_slope
-        out[f"{param}_exceeds_safety"] = slope_pred > (model.safety_slope * 1.5)
-        out[f"{param}_exceeds_datasheet"] = pred > (0.90 * datasheet)
+        out[f"{param}_exceeds_safety"] = exceeds_safety
+        out[f"{param}_exceeds_datasheet"] = exceeds_sheet
         out[f"{param}_ridge_mae"] = model.ridge_mae
         out[f"{param}_blend_mae"] = model.blend_mae
     return out

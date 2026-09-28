@@ -5,7 +5,24 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from src.config import MAD_TO_SIGMA, MIN_SIGMA_FLOOR, PARAMS, PAT_K
+from src.config import (
+    MAD_TO_SIGMA,
+    MIN_SIGMA_FLOOR,
+    PARAMS,
+    PAT_K,
+    REQUIRED_PARAMS,
+    TCOEFF_COLD_COL,
+    TCOEFF_DT,
+)
+
+
+def present_params(df: pd.DataFrame) -> tuple[str, ...]:
+    """Parameters that have both 0 h and 24 h columns on this frame."""
+    found: list[str] = []
+    for param in PARAMS:
+        if f"{param}_0h" in df.columns and f"{param}_24h" in df.columns:
+            found.append(param)
+    return tuple(found)
 
 
 def robust_center_scale(values: np.ndarray, floor: float) -> tuple[float, float]:
@@ -32,9 +49,10 @@ def pat_limits(median: float, sigma: float, sided: str, k: float = PAT_K) -> tup
 
 def lot_stats(df: pd.DataFrame, times: tuple[int, ...] = (0, 24)) -> pd.DataFrame:
     records: list[dict] = []
+    params = present_params(df)
     for lot_id, group in df.groupby("lot_id"):
         rec: dict = {"lot_id": lot_id, "n_parts": int(len(group))}
-        for param in PARAMS:
+        for param in params:
             for t in times:
                 col = f"{param}_{t}h"
                 med, sig = robust_center_scale(group[col].to_numpy(), MIN_SIGMA_FLOOR[param])
@@ -49,25 +67,38 @@ def lot_stats(df: pd.DataFrame, times: tuple[int, ...] = (0, 24)) -> pd.DataFram
             rec[f"{param}_slope24_median"] = med_s
             rec[f"{param}_slope24_sigma"] = sig_s
             rec[f"{param}_slope24_pat_hi"] = med_s + PAT_K * sig_s
+        if TCOEFF_COLD_COL in group.columns:
+            hot = group["iddq_0h"].to_numpy(dtype=float)
+            cold = group[TCOEFF_COLD_COL].to_numpy(dtype=float)
+            ea = (hot - cold) / np.maximum(hot, 0.05)
+            med_e, sig_e = robust_center_scale(ea, 0.02)
+            rec["iddq_ea_median"] = med_e
+            rec["iddq_ea_sigma"] = sig_e
         records.append(rec)
     return pd.DataFrame(records)
 
 
 def attach_lot_relative(df: pd.DataFrame, stats: pd.DataFrame, times: tuple[int, ...] = (0, 24)) -> pd.DataFrame:
     out = df.merge(stats, on="lot_id", how="left")
-    for param in PARAMS:
+    for param in present_params(out):
         for t in times:
             col = f"{param}_{t}h"
             out[f"{col}_z"] = (out[col] - out[f"{col}_median"]) / out[f"{col}_sigma"]
         out[f"{param}_slope24"] = (out[f"{param}_24h"] - out[f"{param}_0h"]) / 24.0
         out[f"{param}_rel24"] = (out[f"{param}_24h"] - out[f"{param}_0h"]) / np.maximum(out[f"{param}_0h"], 0.05)
         out[f"{param}_slope24_z"] = (out[f"{param}_slope24"] - out[f"{param}_slope24_median"]) / out[f"{param}_slope24_sigma"]
+    if TCOEFF_COLD_COL in out.columns and "iddq_ea_median" in out.columns:
+        hot = out["iddq_0h"].to_numpy(dtype=float)
+        cold = out[TCOEFF_COLD_COL].to_numpy(dtype=float)
+        out["iddq_ea_proxy"] = (hot - cold) / np.maximum(hot, 0.05)
+        out["iddq_tcoeff"] = (hot - cold) / TCOEFF_DT
+        out["iddq_ea_z"] = (out["iddq_ea_proxy"] - out["iddq_ea_median"]) / out["iddq_ea_sigma"]
     return out
 
 
 def early_model_matrix(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     cols: list[str] = []
-    for param in PARAMS:
+    for param in REQUIRED_PARAMS:
         cols.extend(
             [
                 f"{param}_0h",

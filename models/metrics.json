@@ -1,28 +1,63 @@
 {
   "thresholds": {
-    "hold": 0.40084332010731677,
-    "reject": 0.6830095624646695
+    "hold": 0.40197742746811443,
+    "reject": 0.6918164123435289
   },
   "train": {
     "n": 2478,
     "defectives": 205,
     "tp": 205,
-    "fp": 218,
-    "tn": 2055,
+    "fp": 207,
+    "tn": 2066,
     "fn": 0,
-    "precision": 0.4846335697399527,
+    "precision": 0.4975728155339806,
     "recall": 1.0,
-    "f1": 0.6528662420382165,
+    "catch_rate": 1.0,
+    "f1": 0.6645056726094003,
     "fn_rate": 0.0,
     "latent_total": 205,
     "latent_caught": 205,
     "latent_catch_rate": 1.0,
     "static_24h_missed_defectives": 205,
-    "hours_saved_total": 18144,
-    "early_rejects": 126,
-    "holds": 297,
-    "passes": 2055,
-    "reject_precision": 1.0
+    "hours_saved_total": 17856,
+    "early_rejects": 124,
+    "holds": 288,
+    "passes": 2066,
+    "reject_precision": 1.0,
+    "reject_only_recall": 0.6048780487804878,
+    "reject_true_positives": 124,
+    "defect_holds": 81,
+    "defect_passes": 0,
+    "healthy_n": 2273,
+    "healthy_holds": 207,
+    "healthy_hold_rate": 0.09106907171139464,
+    "healthy_rejects": 0,
+    "by_defect_type": {
+      "maverick": {
+        "n": 81,
+        "reject": 81,
+        "hold": 0,
+        "pass": 0,
+        "reject_recall": 1.0,
+        "catch_rate": 1.0
+      },
+      "latent_drift": {
+        "n": 78,
+        "reject": 31,
+        "hold": 47,
+        "pass": 0,
+        "reject_recall": 0.3974358974358974,
+        "catch_rate": 1.0
+      },
+      "runaway": {
+        "n": 46,
+        "reject": 12,
+        "hold": 34,
+        "pass": 0,
+        "reject_recall": 0.2608695652173913,
+        "catch_rate": 1.0
+      }
+    }
   },
   "val": {
     "n": 1218,
@@ -33,6 +68,7 @@
     "fn": 0,
     "precision": 0.3983050847457627,
     "recall": 1.0,
+    "catch_rate": 1.0,
     "f1": 0.5696969696969697,
     "fn_rate": 0.0,
     "latent_total": 94,
@@ -43,72 +79,180 @@
     "early_rejects": 66,
     "holds": 170,
     "passes": 982,
-    "reject_precision": 1.0
+    "reject_precision": 1.0,
+    "reject_only_recall": 0.7021276595744681,
+    "reject_true_positives": 66,
+    "defect_holds": 28,
+    "defect_passes": 0,
+    "healthy_n": 1124,
+    "healthy_holds": 142,
+    "healthy_hold_rate": 0.12633451957295375,
+    "healthy_rejects": 0,
+    "by_defect_type": {
+      "maverick": {
+        "n": 40,
+        "reject": 40,
+        "hold": 0,
+        "pass": 0,
+        "reject_recall": 1.0,
+        "catch_rate": 1.0
+      },
+      "latent_drift": {
+        "n": 40,
+        "reject": 23,
+        "hold": 17,
+        "pass": 0,
+        "reject_recall": 0.575,
+        "catch_rate": 1.0
+      },
+      "runaway": {
+        "n": 14,
+        "reject": 3,
+        "hold": 11,
+        "pass": 0,
+        "reject_recall": 0.21428571428571427,
+        "catch_rate": 1.0
+      }
+    }
   },
   "test": {
     "n": 1449,
     "defectives": 102,
     "tp": 102,
-    "fp": 175,
-    "tn": 1172,
+    "fp": 172,
+    "tn": 1175,
     "fn": 0,
-    "precision": 0.36823104693140796,
+    "precision": 0.3722627737226277,
     "recall": 1.0,
-    "f1": 0.5382585751978892,
+    "catch_rate": 1.0,
+    "f1": 0.5425531914893617,
     "fn_rate": 0.0,
     "latent_total": 102,
     "latent_caught": 102,
     "latent_catch_rate": 1.0,
     "static_24h_missed_defectives": 102,
-    "hours_saved_total": 10800,
-    "early_rejects": 75,
-    "holds": 202,
-    "passes": 1172,
-    "reject_precision": 0.9866666666666667
+    "hours_saved_total": 10944,
+    "early_rejects": 76,
+    "holds": 198,
+    "passes": 1175,
+    "reject_precision": 0.9868421052631579,
+    "reject_only_recall": 0.7352941176470589,
+    "reject_true_positives": 75,
+    "defect_holds": 27,
+    "defect_passes": 0,
+    "healthy_n": 1347,
+    "healthy_holds": 171,
+    "healthy_hold_rate": 0.12694877505567928,
+    "healthy_rejects": 1,
+    "by_defect_type": {
+      "maverick": {
+        "n": 42,
+        "reject": 42,
+        "hold": 0,
+        "pass": 0,
+        "reject_recall": 1.0,
+        "catch_rate": 1.0
+      },
+      "latent_drift": {
+        "n": 33,
+        "reject": 18,
+        "hold": 15,
+        "pass": 0,
+        "reject_recall": 0.5454545454545454,
+        "catch_rate": 1.0
+      },
+      "runaway": {
+        "n": 27,
+        "reject": 15,
+        "hold": 12,
+        "pass": 0,
+        "reject_recall": 0.5555555555555556,
+        "catch_rate": 1.0
+      }
+    }
   },
   "drift_val": {
-    "iddq_mae": 0.4703749655351421,
+    "iddq_mae": 0.470202324974844,
     "iddq_extrap_mae": 1.1790071727851248,
-    "iddq_mae_healthy": 0.3340941024037654,
-    "ileak_mae": 0.30076540795136747,
+    "iddq_mae_healthy": 0.34005881620452244,
+    "ileak_mae": 0.2982714856099577,
     "ileak_extrap_mae": 0.704138749131053,
-    "ileak_mae_healthy": 0.22953499037307934,
-    "tpd_mae": 0.0652589630610372,
+    "ileak_mae_healthy": 0.2282800689786763,
+    "tpd_mae": 0.06492279445240093,
     "tpd_extrap_mae": 0.18850677337917843,
-    "tpd_mae_healthy": 0.04893800562425194
+    "tpd_mae_healthy": 0.04835482583132007,
+    "vth_mae": 0.006480848282987414,
+    "vth_extrap_mae": 0.018770786012739987,
+    "vth_mae_healthy": 0.0049153112833643505,
+    "idsat_mae": 0.18580989858203237,
+    "idsat_extrap_mae": 0.45413663190368986,
+    "idsat_mae_healthy": 0.1573634982511524,
+    "irev_mae": 0.09175842478883865,
+    "irev_extrap_mae": 0.30203295358916044,
+    "irev_mae_healthy": 0.0677914629095995
   },
   "drift_test": {
-    "iddq_mae": 0.5066035965188586,
+    "iddq_mae": 0.5144986813836523,
     "iddq_extrap_mae": 1.2588150723279052,
-    "iddq_mae_healthy": 0.3386141326264414,
-    "ileak_mae": 0.3055969760784967,
+    "iddq_mae_healthy": 0.34936250126855406,
+    "ileak_mae": 0.3026075453387377,
     "ileak_extrap_mae": 0.7241199478181946,
-    "ileak_mae_healthy": 0.2181008831548871,
-    "tpd_mae": 0.06571665357041058,
+    "ileak_mae_healthy": 0.21533850750988615,
+    "tpd_mae": 0.06508554738946948,
     "tpd_extrap_mae": 0.19292793150467558,
-    "tpd_mae_healthy": 0.04921307596200022
+    "tpd_mae_healthy": 0.048652132169200356,
+    "vth_mae": 0.00659165389200257,
+    "vth_extrap_mae": 0.018554891967173404,
+    "vth_mae_healthy": 0.004798400782496543,
+    "idsat_mae": 0.1949983400465164,
+    "idsat_extrap_mae": 0.464520551428944,
+    "idsat_mae_healthy": 0.14890550349171228,
+    "irev_mae": 0.0951519210842321,
+    "irev_extrap_mae": 0.29439328554557537,
+    "irev_mae_healthy": 0.06974592227466482
   },
   "drift_models": {
     "iddq": {
-      "ridge_mae": 0.61065407759545,
-      "booster_mae": 0.46965752947537087,
-      "blend_mae": 0.4703749655351421,
+      "ridge_mae": 0.6145356071665131,
+      "booster_mae": 0.4681713486621912,
+      "blend_mae": 0.470202324974844,
       "blend_weight": 0.7,
       "safety_slope": 0.0059081632801340975
     },
     "ileak": {
-      "ridge_mae": 0.42988395463075546,
-      "booster_mae": 0.2996793328798377,
-      "blend_mae": 0.30076540795136747,
+      "ridge_mae": 0.4282805165952023,
+      "booster_mae": 0.2982404141980892,
+      "blend_mae": 0.2982714856099577,
       "blend_weight": 0.7,
-      "safety_slope": 0.005397237349413551
+      "safety_slope": 0.005398867806699501
     },
     "tpd": {
-      "ridge_mae": 0.08485441058299412,
-      "booster_mae": 0.06464876051114996,
-      "blend_mae": 0.0652589630610372,
+      "ridge_mae": 0.08426859074913141,
+      "booster_mae": 0.06401752516034152,
+      "blend_mae": 0.06492279445240093,
       "blend_weight": 0.7,
-      "safety_slope": 0.001083789597708063
+      "safety_slope": 0.0010872389471362457
+    },
+    "vth": {
+      "ridge_mae": 0.00794012694490422,
+      "booster_mae": 0.0065372310277721085,
+      "blend_mae": 0.006480848282987414,
+      "blend_weight": 0.7,
+      "safety_slope": 8.309352874900763e-05
+    },
+    "idsat": {
+      "ridge_mae": 0.3413791948747179,
+      "booster_mae": 0.17835845057691754,
+      "blend_mae": 0.18580989858203237,
+      "blend_weight": 0.7,
+      "safety_slope": -0.003198116310145885
+    },
+    "irev": {
+      "ridge_mae": 0.10429724106291759,
+      "booster_mae": 0.09389618790030801,
+      "blend_mae": 0.09175842478883865,
+      "blend_weight": 0.7,
+      "safety_slope": 0.0012681188440763318
     }
   },
   "splits": {

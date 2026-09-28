@@ -11,6 +11,10 @@ def test_end_to_end_high_recall_on_held_out_lots():
 
     assert bundle.t_rej > bundle.t_hold
     assert report["test"]["recall"] >= 0.85
+    assert report["test"]["catch_rate"] == report["test"]["recall"]
+    assert report["test"]["reject_only_recall"] <= report["test"]["catch_rate"]
+    assert "by_defect_type" in report["test"]
+    assert "healthy_hold_rate" in report["test"]
     assert report["test"]["fn_rate"] <= 0.15
     assert report["test"]["latent_catch_rate"] >= 0.80
 
@@ -27,3 +31,7 @@ def test_dataset_contains_latent_escapes():
     assert df["lot_id"].nunique() == 9
     assert "LOTSIH" in set(df["lot_id"])
     assert pd.api.types.is_numeric_dtype(df["iddq_0h"])
+    assert "vth_0h" in df.columns
+    assert "idsat_24h" in df.columns
+    assert "irev_168h" in df.columns
+    assert "iddq_25c" in df.columns

@@ -18,9 +18,11 @@ ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.config import DATA_DIR, MODELS_DIR, PARAM_META, PARAMS, TIMES_H
+from src.config import DATA_DIR, MODELS_DIR, PARAM_META, PARAMS, REQUIRED_PARAMS, TIMES_H
+from src.features import present_params
 from src.explain import explain_part
 from src.generate_data import save_dataset
+from src.metrics import DEFECT_LABELS, screening_headline, seed_span_line
 from src.live_screen import (
     NOMINAL_HEALTHY,
     REQUIRED_MEASURES,
@@ -125,6 +127,35 @@ def _kpi(label: str, value: str, help_text: str) -> None:
     st.metric(label, value, help=help_text)
 
 
+def _seed_sweep_line() -> str | None:
+    path = MODELS_DIR / "metrics_seeds.json"
+    if not path.exists():
+        return None
+    summary = json.loads(path.read_text(encoding="utf-8")).get("summary")
+    if not summary:
+        return None
+    return seed_span_line(summary)
+
+
+def _defect_type_frame(test_m: dict) -> pd.DataFrame | None:
+    by_type = test_m.get("by_defect_type")
+    if not by_type:
+        return None
+    rows = []
+    for kind, row in by_type.items():
+        rows.append(
+            {
+                "Defect type": DEFECT_LABELS.get(kind, kind),
+                "Parts": row["n"],
+                "REJECT": row["reject"],
+                "HOLD": row["hold"],
+                "PASS": row["pass"],
+                "REJECT-only recall": f"{row['reject_recall']:.1%}",
+            }
+        )
+    return pd.DataFrame(rows)
+
+
 def _dedent_md(text: str) -> str:
     """Strip the indent of a triple-quoted block nested inside a function.
 
@@ -168,15 +199,19 @@ def _render_method_results(report: dict) -> None:
     d2.metric("PASS", f"{test_m['passes']:,}")
     d3.metric("HOLD", f"{test_m['holds']:,}")
     d4.metric("REJECT", f"{test_m['early_rejects']:,}")
+    st.caption(screening_headline(test_m))
+    seed_line = _seed_sweep_line()
+    if seed_line:
+        st.caption(seed_line)
     st.caption(
-        f"Recall {test_m['recall']:.0%} "
-        f"({test_m['fn']} miss / {test_m['defectives']} defectives). "
-        f"Static datasheet limits at 24 h would miss {test_m['static_24h_missed_defectives']} of them."
+        f"Static datasheet limits at 24 h would miss {test_m['static_24h_missed_defectives']} of these defectives."
     )
 
     st.markdown("#### Module B — 168 h forecast vs linear extrapolation")
     rows = []
     for param in PARAMS:
+        if f"{param}_mae" not in drift or param not in models:
+            continue
         meta = PARAM_META[param]
         unit = meta["unit"]
         m = models[param]
@@ -187,7 +222,7 @@ def _render_method_results(report: dict) -> None:
                 "AETHER MAE": f"{drift[f'{param}_mae']:.3f} {unit}",
                 "Linear extrap MAE": f"{drift[f'{param}_extrap_mae']:.3f} {unit}",
                 "Blend": f"{(1.0 - w):.0%} Ridge + {w:.0%} booster",
-                "Healthy 95th slope": f"{m['safety_slope']:.4f} {unit}/h",
+                "Safety slope": f"{m['safety_slope']:.4f} {unit}/h",
             }
         )
     st.dataframe(pd.DataFrame(rows), hide_index=True, **_wide())
@@ -441,23 +476,27 @@ def _part_card(
     for bullet in card["bullets"]:
         st.markdown(f"- {bullet}")
 
+    shown = [p for p in PARAMS if f"pred_{p}_168h" in row.index]
     st.markdown("#### Time series vs predicted 168 h")
-    g1, g2, g3 = st.columns(3)
-    for col, param in zip((g1, g2, g3), PARAMS):
-        with col:
-            _chart(_series_figure(row, param))
+    for i in range(0, len(shown), 3):
+        cols = st.columns(3)
+        for col, param in zip(cols, shown[i : i + 3]):
+            with col:
+                _chart(_series_figure(row, param))
 
     st.markdown("#### Why the 168 h forecast looks like this (Ridge waterfall — not a black box)")
-    pcols = st.columns(3)
-    for col, pcard in zip(pcols, card["param_cards"]):
-        with col:
-            st.caption(
-                f"0 h {pcard['v0']:.3f} {pcard['unit']} (z={pcard['z0']:.2f}) → "
-                f"24 h {pcard['v24']:.3f} (z={pcard['z24']:.2f}) → "
-                f"pred 168 h {pcard['pred_168']:.3f}"
-                + (f"  (actual {pcard['actual_168']:.3f})" if pcard["actual_168"] is not None else "")
-            )
-            _chart(_waterfall(pcard))
+    cards = card["param_cards"]
+    for i in range(0, len(cards), 3):
+        pcols = st.columns(3)
+        for col, pcard in zip(pcols, cards[i : i + 3]):
+            with col:
+                st.caption(
+                    f"0 h {pcard['v0']:.3f} {pcard['unit']} (z={pcard['z0']:.2f}) → "
+                    f"24 h {pcard['v24']:.3f} (z={pcard['z24']:.2f}) → "
+                    f"pred 168 h {pcard['pred_168']:.3f}"
+                    + (f"  (actual {pcard['actual_168']:.3f})" if pcard["actual_168"] is not None else "")
+                )
+                _chart(_waterfall(pcard))
 
     st.markdown("#### Inspector brief (copy into the lot traveller)")
     st.code(card["inspector_brief"], language=None)
@@ -494,10 +533,13 @@ def _part_card(
 
 
 def _render_live_results(result: pd.DataFrame, bundle: object, param_sel: str, iforest_range: tuple[float, float], key_prefix: str) -> None:
+    shown = list(present_params(result)) or list(REQUIRED_PARAMS)
+    if param_sel not in shown:
+        param_sel = shown[1] if len(shown) > 1 else shown[0]
     param_sel = st.selectbox(
         "Parameter",
-        list(PARAMS),
-        index=list(PARAMS).index(param_sel) if param_sel in PARAMS else 1,
+        shown,
+        index=shown.index(param_sel),
         format_func=lambda p: PARAM_META[p]["label"],
         key=f"{key_prefix}_param",
     )
@@ -585,6 +627,9 @@ def _live_lot_editor(bundle: object, param_sel: str, iforest_range: tuple[float,
 
     if "live_lot_df" not in st.session_state:
         st.session_state.live_lot_df = for_editor(blank_frame(6))
+    elif "iddq_25c" in getattr(st.session_state.live_lot_df, "columns", []):
+        st.session_state.live_lot_df = for_editor(st.session_state.live_lot_df)
+        st.session_state.live_editor_n = int(st.session_state.get("live_editor_n", 0)) + 1
 
     if uploaded is not None:
         file_id = f"{uploaded.name}-{uploaded.size}"
@@ -597,9 +642,16 @@ def _live_lot_editor(bundle: object, param_sel: str, iforest_range: tuple[float,
             except LiveScreenError as exc:
                 st.error(str(exc))
 
-    st.markdown("Edit cells directly. Required: 0 h and 24 h for IDDQ, leakage, and tpd.")
+    st.markdown(
+        "Edit cells directly. Required: 0 h and 24 h for IDDQ, leakage, and tpd. "
+        "VTH, IDSAT, and reverse leakage are on the same grid — "
+        "fill them to run PAT and 168 h forecasts on those columns, or leave them empty."
+    )
+    editor_numeric = [
+        col for col in st.session_state.live_lot_df.columns if col not in ("part_id", "lot_id")
+    ]
     number_cols = {
-        col: st.column_config.NumberColumn(col, format="%.3f") for col in REQUIRED_MEASURES
+        col: st.column_config.NumberColumn(col, format="%.3f") for col in editor_numeric
     }
     try:
         edited = st.data_editor(
@@ -679,9 +731,9 @@ def _live_one_part(
     with id_col:
         part_id = st.text_input("Part id", value="MY-PART", key="live_part_id")
 
-    grid = st.columns(3)
     values: dict[str, float] = {}
-    for i, param in enumerate(PARAMS):
+    grid = st.columns(3)
+    for i, param in enumerate(REQUIRED_PARAMS):
         with grid[i]:
             st.markdown(f"**{PARAM_META[param]['label']}** ({PARAM_META[param]['unit']})")
             for t in (0, 24):
@@ -691,6 +743,21 @@ def _live_one_part(
                     min_value=0.0,
                     max_value=float(PARAM_META[param]["datasheet_max"]) * 1.5,
                     step=0.01,
+                    format="%.3f",
+                    key=f"live_n_{key}",
+                ))
+    extra_params = [p for p in PARAMS if p not in REQUIRED_PARAMS]
+    extra_grid = st.columns(3)
+    for i, param in enumerate(extra_params):
+        with extra_grid[i]:
+            st.markdown(f"**{PARAM_META[param]['label']}** ({PARAM_META[param]['unit']})")
+            for t in (0, 24):
+                key = f"{param}_{t}h"
+                values[key] = float(st.number_input(
+                    f"{t} h",
+                    min_value=0.0,
+                    max_value=float(PARAM_META[param]["datasheet_max"]) * 1.5,
+                    step=0.001,
                     format="%.3f",
                     key=f"live_n_{key}",
                 ))
@@ -713,7 +780,8 @@ def _live_tab(screened: pd.DataFrame, bundle: object, param_sel: str, iforest_ra
     st.caption("Inference only. 168 h is never an input.")
     st.caption(
         "Upload or edit a lot CSV, or enter one part against a canned lot. "
-        "The loaded models score 0 h and 24 h immediately."
+        "The loaded models score 0 h and 24 h immediately. "
+        "VTH, IDSAT, and reverse leakage are on the live grid."
     )
     mode = st.radio(
         "How do you want to enter readings?",
@@ -758,9 +826,15 @@ def _filter_row(screened: pd.DataFrame, key_prefix: str) -> tuple[str, pd.DataFr
 
 def _kpi_row(report: dict) -> None:
     test_m = report["test"]
+    catch_help = "HOLD or REJECT. A defective part scored PASS is the miss."
+    if "reject_only_recall" in test_m:
+        catch_help = (
+            f"HOLD or REJECT. REJECT-only recall is {test_m['reject_only_recall']:.1%} "
+            f"({test_m['reject_true_positives']} of {test_m['defectives']})."
+        )
     c1, c2, c3, c4, c5, c6 = st.columns(6)
     with c1:
-        _kpi("Held-out recall", f"{test_m['recall']:.1%}", "False negatives are catastrophic; this is the primary score.")
+        _kpi("Catch rate", f"{test_m['recall']:.1%}", catch_help)
     with c2:
         _kpi("False negatives", f"{test_m['fn']} / {test_m['defectives']}", "Defective parts that received PASS.")
     with c3:
@@ -771,6 +845,10 @@ def _kpi_row(report: dict) -> None:
         _kpi("IDDQ 168 h MAE", f"{report['drift_test']['iddq_mae']:.2f} µA", "Module B prediction vs hidden ground truth.")
     with c6:
         _kpi("Chamber hours saved", f"{test_m['hours_saved_total']:,}", "Only from 24 h REJECT — healthy flight parts still finish burn-in.")
+    st.caption(screening_headline(test_m))
+    seed_line = _seed_sweep_line()
+    if seed_line:
+        st.caption(seed_line)
 
 
 def main() -> None:
@@ -861,12 +939,23 @@ def main() -> None:
         r1, r2, r3 = st.columns(3)
         with r1:
             st.markdown("#### 1. Anomaly detection")
-            st.metric("Recall (catch rate)", f"{test_m['recall']:.1%}")
+            st.metric("Catch rate (HOLD or REJECT)", f"{test_m['recall']:.1%}")
+            if "reject_only_recall" in test_m:
+                st.metric(
+                    "REJECT-only recall",
+                    f"{test_m['reject_only_recall']:.1%}",
+                    help=f"{test_m['reject_true_positives']} of {test_m['defectives']} defectives rejected at 24 h.",
+                )
+                st.metric(
+                    "Healthy parts held",
+                    f"{test_m['healthy_hold_rate']:.1%}",
+                    help=f"{test_m['healthy_holds']} of {test_m['healthy_n']} healthy parts sent to the 96 h check.",
+                )
             st.metric("False negatives", f"{test_m['fn']} / {test_m['defectives']}")
             st.caption(
-                f"A false negative is catastrophic. Static 24 h datasheet limits would miss "
-                f"**{test_m['static_24h_missed_defectives']}** of these defectives. "
-                f"AETHER misses **{test_m['fn']}**."
+                screening_headline(test_m)
+                + " A false negative is a defective PASS. Static 24 h datasheet limits would miss "
+                f"{test_m['static_24h_missed_defectives']} of these defectives."
             )
         with r2:
             st.markdown("#### 2. Drift prediction accuracy")
@@ -874,9 +963,15 @@ def main() -> None:
             st.metric("IDDQ MAE @ 168 h", f"{d['iddq_mae']:.3f} µA")
             st.metric("Leakage MAE @ 168 h", f"{d['ileak_mae']:.3f} µA")
             st.metric("tpd MAE @ 168 h", f"{d['tpd_mae']:.3f} ns")
+            extra_bits = []
+            for param, unit in (("vth", "V"), ("idsat", "mA"), ("irev", "µA")):
+                if f"{param}_mae" in d:
+                    extra_bits.append(f"{param} {d[f'{param}_mae']:.3f} {unit}")
+            extra_txt = f" Extras: {', '.join(extra_bits)}." if extra_bits else ""
             st.caption(
                 f"Hidden ground truth. Linear extrapolation MAE is "
                 f"{d['iddq_extrap_mae']:.2f} / {d['ileak_extrap_mae']:.2f} / {d['tpd_extrap_mae']:.2f}."
+                + extra_txt
             )
         with r3:
             st.markdown("#### 3. Explainability")
@@ -891,6 +986,14 @@ def main() -> None:
                 """
             )
             st.caption("Open QA inspector → LOTSIH-0045 for the 10 µA vs 45 µA vs 50 µA worked example.")
+
+        defect_table = _defect_type_frame(test_m)
+        if defect_table is not None:
+            st.markdown("#### Held-out defectives by type")
+            st.dataframe(defect_table, hide_index=True, **_wide())
+        seed_line = _seed_sweep_line()
+        if seed_line:
+            st.caption(seed_line)
 
         if "sih_example" in screened.columns and screened["sih_example"].astype(bool).any():
             demo = screened.loc[screened["sih_example"].astype(bool)].iloc[0]
@@ -930,6 +1033,15 @@ def main() -> None:
             False negatives are costed 80× higher than false positives during
             threshold calibration. Lots are held out entirely during training so PAT
             statistics and the drift model are not leaking the test process corner.
+
+            ### Extra parametric columns
+
+            Training lots include **VTH**, **IDSAT**, **per-junction reverse leakage**,
+            and a room-temp **IDDQ @ 25 °C** checkpoint (IDDQ/T). Those feed the same
+            PAT + 168 h drift stack. A live lot CSV can omit them; Isolation Forest
+            still runs on IDDQ, leakage, and tpd. Power-supply noise (L di/dt) and
+            IDDQ vs frequency stay out of scope (scope / functional test, not a
+            standard ATE column).
 
             ### Screen my data
 

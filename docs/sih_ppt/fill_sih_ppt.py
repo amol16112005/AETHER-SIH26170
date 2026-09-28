@@ -160,7 +160,7 @@ def fill_slide2() -> None:
             ("Static 50 µA datasheet PASS on a 45 µA part in a 10 µA lot (SIH example LOTSIH-0045). Dynamic PAT REJECTS it. Latent drift is pulled at 24 h instead of escaping into a payload.", False),
             ("Innovation and uniqueness of the solution", True),
             ("Two-signal REJECT (PAT or unsafe drift) — a lone Isolation Forest twitch cannot kill a flight part. HOLD band (not scrap/release). FN cost 1000 vs FP 12. Ridge waterfalls a QA inspector can argue with.", False),
-            ("Held-out lots (24 lots, 4,945 parts, split by lot): 100% recall (0 miss / 102 latent defects), 24 h REJECT precision 98.7%, IDDQ 168 h MAE 0.51 µA vs 1.26 µA linear extrapolation.", False),
+            ("Held-out lots (25 lots, 5,145 parts, split by lot): 0 escapes — 75 rejected at 24 h, 27 sent to the 96 h check, 12.7% of healthy parts held. 100% is the catch rate (HOLD or REJECT); REJECT-only recall is 75/102. 24 h REJECT precision 98.7%. IDDQ 168 h MAE 0.51 µA vs 1.26 µA linear extrapolation. Optional extras: VTH, IDSAT, reverse leakage, IDDQ/T.", False),
         ],
         size="1500",
     )

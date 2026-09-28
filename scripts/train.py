@@ -12,6 +12,7 @@ if str(ROOT) not in sys.path:
 
 from src.config import DATA_DIR, MODELS_DIR
 from src.generate_data import save_dataset
+from src.metrics import format_defect_lines, screening_headline
 from src.pipeline import save_bundle, train_bundle
 import pandas as pd
 
@@ -49,13 +50,21 @@ def main() -> None:
     t = report["test"]
     d = report["drift_test"]
     print("\n=== Held-out lots (Module A) ===")
-    print(f"  Recall {t['recall']:.3f}   Precision {t['precision']:.3f}   FN {t['fn']}/{t['defectives']}")
+    print(f"  {screening_headline(t)}")
+    print(f"  Catch rate (HOLD or REJECT) {t['catch_rate']:.3f}   REJECT-only recall {t['reject_only_recall']:.3f}")
+    print(f"  Healthy HOLD rate {t['healthy_hold_rate']:.3f}  ({t['healthy_holds']}/{t['healthy_n']})")
+    for line in format_defect_lines(t):
+        print(f"  {line}")
     print(f"  Latent-escape catch rate {t['latent_catch_rate']:.3f}  ({t['latent_caught']}/{t['latent_total']})")
     print(f"  Static 24 h screen would miss {t['static_24h_missed_defectives']} defectives")
     print(f"  Decisions  PASS={t['passes']}  HOLD={t['holds']}  REJECT={t['early_rejects']}  (reject precision {t['reject_precision']:.3f})")
     print(f"  Chamber hours saved {t['hours_saved_total']}")
     print("\n=== Held-out lots (Module B MAE @ 168 h) ===")
-    for param in ("iddq", "ileak", "tpd"):
+    from src.config import PARAMS
+
+    for param in PARAMS:
+        if f"{param}_mae" not in d:
+            continue
         print(f"  {param:6s}  model {d[f'{param}_mae']:.4f}   linear-extrap {d[f'{param}_extrap_mae']:.4f}")
     print(f"\nWrote {MODELS_DIR / 'screening_bundle.joblib'}")
     print(f"Wrote {report_path}")

@@ -21,8 +21,8 @@ from sklearn.covariance import EmpiricalCovariance, MinCovDet
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import RobustScaler
 
-from src.config import IFOREST_CONTAMINATION, PARAM_META, PARAMS, PAT_K, RANDOM_STATE
-from src.features import early_model_matrix
+from src.config import IFOREST_CONTAMINATION, PARAM_META, PAT_K, RANDOM_STATE, REQUIRED_PARAMS
+from src.features import early_model_matrix, present_params
 
 
 @dataclass
@@ -38,9 +38,11 @@ def _pat_flags(df: pd.DataFrame) -> pd.DataFrame:
     flags = pd.DataFrame(index=df.index)
     score = np.zeros(len(df), dtype=float)
     reasons = [[] for _ in range(len(df))]
+    params = present_params(df)
 
-    for param in PARAMS:
+    for param in params:
         sided = PARAM_META[param]["sided"]
+        aging = PARAM_META[param].get("aging", "up")
         for t in (0, 24):
             col = f"{param}_{t}h"
             z = df[f"{col}_z"].to_numpy()
@@ -51,17 +53,32 @@ def _pat_flags(df: pd.DataFrame) -> pd.DataFrame:
                 hit = np.abs(z) > PAT_K
                 contrib = np.clip(np.abs(z) / PAT_K, 0, None)
             flags[f"pat_{col}"] = hit
-            score += contrib
+            if param in REQUIRED_PARAMS:
+                score += contrib
             for i, is_hit in enumerate(hit):
                 if is_hit:
                     reasons[i].append(f"PAT {param}@{t}h z={z[i]:.2f}")
         z_s = df[f"{param}_slope24_z"].to_numpy()
-        hit_s = z_s > PAT_K
+        if aging == "down":
+            hit_s = z_s < -PAT_K
+            contrib_s = np.clip(-z_s / PAT_K, 0, None)
+        else:
+            hit_s = z_s > PAT_K
+            contrib_s = np.clip(z_s / PAT_K, 0, None)
         flags[f"pat_{param}_slope24"] = hit_s
-        score += np.clip(z_s / PAT_K, 0, None)
+        if param in REQUIRED_PARAMS:
+            score += contrib_s
         for i, is_hit in enumerate(hit_s):
             if is_hit:
                 reasons[i].append(f"PAT {param} slope z={z_s[i]:.2f}")
+
+    if "iddq_ea_z" in df.columns:
+        z_ea = df["iddq_ea_z"].to_numpy()
+        hit_ea = np.abs(z_ea) > PAT_K
+        flags["pat_iddq_tcoeff"] = hit_ea
+        for i, is_hit in enumerate(hit_ea):
+            if is_hit:
+                reasons[i].append(f"PAT IDDQ/T (activation-energy proxy) z={z_ea[i]:.2f}")
 
     flags["pat_score"] = score
     flags["pat_hit"] = flags.filter(like="pat_").drop(columns=["pat_score"]).any(axis=1)

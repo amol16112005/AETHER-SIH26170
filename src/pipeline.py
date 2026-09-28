@@ -9,7 +9,7 @@ import joblib
 import pandas as pd
 from sklearn.model_selection import GroupShuffleSplit
 
-from src.config import MODELS_DIR, RANDOM_STATE
+from src.config import MODELS_DIR, RANDOM_STATE, REQUIRED_PARAMS
 from src.decisions import calibrate_thresholds, fuse_decision
 from src.explain import explain_part
 from src.features import attach_lot_relative, lot_stats
@@ -57,12 +57,14 @@ class ScreeningBundle:
     test_lots: list[str]
 
 
-def lot_splits(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    gss = GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=RANDOM_STATE)
+def lot_splits(
+    df: pd.DataFrame, random_state: int = RANDOM_STATE
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    gss = GroupShuffleSplit(n_splits=1, test_size=0.25, random_state=random_state)
     trainval_idx, test_idx = next(gss.split(df, groups=df["lot_id"]))
     trainval = df.iloc[trainval_idx].reset_index(drop=True)
     test = df.iloc[test_idx].reset_index(drop=True)
-    gss2 = GroupShuffleSplit(n_splits=1, test_size=0.30, random_state=RANDOM_STATE)
+    gss2 = GroupShuffleSplit(n_splits=1, test_size=0.30, random_state=random_state)
     tr_idx, va_idx = next(gss2.split(trainval, groups=trainval["lot_id"]))
     train = trainval.iloc[tr_idx].reset_index(drop=True)
     val = trainval.iloc[va_idx].reset_index(drop=True)
@@ -89,8 +91,10 @@ def apply_models(
     return fuse_decision(merged, bundle.t_hold, bundle.t_rej)
 
 
-def train_bundle(df: pd.DataFrame) -> tuple[ScreeningBundle, dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    train, val, test = lot_splits(df)
+def train_bundle(
+    df: pd.DataFrame, split_seed: int = RANDOM_STATE
+) -> tuple[ScreeningBundle, dict, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    train, val, test = lot_splits(df, random_state=split_seed)
     train_e = enrich(train)
     val_e = enrich(val)
     test_e = enrich(test)
@@ -102,12 +106,16 @@ def train_bundle(df: pd.DataFrame) -> tuple[ScreeningBundle, dict, pd.DataFrame,
         [val_e.reset_index(drop=True), score_outliers(val_e, outlier).reset_index(drop=True), predict_drift(val_e, drift).reset_index(drop=True)],
         axis=1,
     )
-    # Use a soft pre-fusion score to set thresholds.
+    # Use a soft pre-fusion score to set thresholds. Core drift only — extras
+    # are PAT + inspector forecasts and must not inflate the HOLD rate.
+    core_exceed = [
+        c
+        for param in REQUIRED_PARAMS
+        for c in (f"{param}_exceeds_safety", f"{param}_exceeds_datasheet")
+        if c in val_scored.columns
+    ]
     pre = val_scored["outlier_score"].to_numpy() + 0.18 * (
-        val_scored[[c for c in val_scored.columns if c.endswith("_exceeds_safety") or c.endswith("_exceeds_datasheet")]]
-        .any(axis=1)
-        .to_numpy()
-        .astype(float)
+        val_scored[core_exceed].any(axis=1).to_numpy().astype(float) if core_exceed else 0.0
     )
     t_hold, t_rej = calibrate_thresholds(val_scored["is_defective"].to_numpy(), pre)
 

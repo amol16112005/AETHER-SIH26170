@@ -1,0 +1,297 @@
+{
+  "sklearn": "1.8.0",
+  "seeds": [
+    42,
+    7,
+    11,
+    19,
+    23
+  ],
+  "note": "Each seed regenerates synthetic lots and redraws the lot holdout. Pitch numbers stay on the frozen scikit-learn 1.8.0 run in metrics.json.",
+  "runs": [
+    {
+      "data_seed": 42,
+      "split_seed": 42,
+      "test_lots": [
+        "LOT01",
+        "LOT09",
+        "LOT10",
+        "LOT12",
+        "LOT14",
+        "LOT17",
+        "LOT24"
+      ],
+      "n": 1449,
+      "defectives": 102,
+      "fn": 0,
+      "catch_rate": 1.0,
+      "reject_only_recall": 0.7254901960784313,
+      "reject_true_positives": 74,
+      "defect_holds": 28,
+      "healthy_hold_rate": 0.1291759465478842,
+      "healthy_holds": 174,
+      "healthy_n": 1347,
+      "passes": 1172,
+      "holds": 202,
+      "early_rejects": 75,
+      "by_defect_type": {
+        "maverick": {
+          "n": 42,
+          "reject": 42,
+          "hold": 0,
+          "pass": 0,
+          "reject_recall": 1.0,
+          "catch_rate": 1.0
+        },
+        "latent_drift": {
+          "n": 33,
+          "reject": 18,
+          "hold": 15,
+          "pass": 0,
+          "reject_recall": 0.5454545454545454,
+          "catch_rate": 1.0
+        },
+        "runaway": {
+          "n": 27,
+          "reject": 14,
+          "hold": 13,
+          "pass": 0,
+          "reject_recall": 0.5185185185185185,
+          "catch_rate": 1.0
+        }
+      },
+      "matches_frozen_test_counts": true
+    },
+    {
+      "data_seed": 7,
+      "split_seed": 7,
+      "test_lots": [
+        "LOT02",
+        "LOT03",
+        "LOT06",
+        "LOT10",
+        "LOT12",
+        "LOT14",
+        "LOT22"
+      ],
+      "n": 1376,
+      "defectives": 100,
+      "fn": 1,
+      "catch_rate": 0.99,
+      "reject_only_recall": 0.74,
+      "reject_true_positives": 74,
+      "defect_holds": 25,
+      "healthy_hold_rate": 0.13009404388714735,
+      "healthy_holds": 166,
+      "healthy_n": 1276,
+      "passes": 1111,
+      "holds": 191,
+      "early_rejects": 74,
+      "by_defect_type": {
+        "maverick": {
+          "n": 37,
+          "reject": 37,
+          "hold": 0,
+          "pass": 0,
+          "reject_recall": 1.0,
+          "catch_rate": 1.0
+        },
+        "latent_drift": {
+          "n": 33,
+          "reject": 23,
+          "hold": 9,
+          "pass": 1,
+          "reject_recall": 0.696969696969697,
+          "catch_rate": 0.9696969696969697
+        },
+        "runaway": {
+          "n": 30,
+          "reject": 14,
+          "hold": 16,
+          "pass": 0,
+          "reject_recall": 0.4666666666666667,
+          "catch_rate": 1.0
+        }
+      }
+    },
+    {
+      "data_seed": 11,
+      "split_seed": 11,
+      "test_lots": [
+        "LOT04",
+        "LOT07",
+        "LOT10",
+        "LOT11",
+        "LOT12",
+        "LOT15",
+        "LOT20"
+      ],
+      "n": 1386,
+      "defectives": 105,
+      "fn": 0,
+      "catch_rate": 1.0,
+      "reject_only_recall": 0.5142857142857142,
+      "reject_true_positives": 54,
+      "defect_holds": 51,
+      "healthy_hold_rate": 0.10772833723653395,
+      "healthy_holds": 138,
+      "healthy_n": 1281,
+      "passes": 1143,
+      "holds": 189,
+      "early_rejects": 54,
+      "by_defect_type": {
+        "maverick": {
+          "n": 38,
+          "reject": 38,
+          "hold": 0,
+          "pass": 0,
+          "reject_recall": 1.0,
+          "catch_rate": 1.0
+        },
+        "latent_drift": {
+          "n": 38,
+          "reject": 10,
+          "hold": 28,
+          "pass": 0,
+          "reject_recall": 0.2631578947368421,
+          "catch_rate": 1.0
+        },
+        "runaway": {
+          "n": 29,
+          "reject": 6,
+          "hold": 23,
+          "pass": 0,
+          "reject_recall": 0.20689655172413793,
+          "catch_rate": 1.0
+        }
+      }
+    },
+    {
+      "data_seed": 19,
+      "split_seed": 19,
+      "test_lots": [
+        "LOT04",
+        "LOT05",
+        "LOT10",
+        "LOT13",
+        "LOT14",
+        "LOT16",
+        "LOT17"
+      ],
+      "n": 1488,
+      "defectives": 149,
+      "fn": 1,
+      "catch_rate": 0.9932885906040269,
+      "reject_only_recall": 0.5771812080536913,
+      "reject_true_positives": 86,
+      "defect_holds": 62,
+      "healthy_hold_rate": 0.10455563853622106,
+      "healthy_holds": 140,
+      "healthy_n": 1339,
+      "passes": 1200,
+      "holds": 202,
+      "early_rejects": 86,
+      "by_defect_type": {
+        "maverick": {
+          "n": 47,
+          "reject": 47,
+          "hold": 0,
+          "pass": 0,
+          "reject_recall": 1.0,
+          "catch_rate": 1.0
+        },
+        "latent_drift": {
+          "n": 66,
+          "reject": 30,
+          "hold": 36,
+          "pass": 0,
+          "reject_recall": 0.45454545454545453,
+          "catch_rate": 1.0
+        },
+        "runaway": {
+          "n": 36,
+          "reject": 9,
+          "hold": 26,
+          "pass": 1,
+          "reject_recall": 0.25,
+          "catch_rate": 0.9722222222222222
+        }
+      }
+    },
+    {
+      "data_seed": 23,
+      "split_seed": 23,
+      "test_lots": [
+        "LOT04",
+        "LOT15",
+        "LOT16",
+        "LOT17",
+        "LOT18",
+        "LOT21",
+        "LOT22"
+      ],
+      "n": 1402,
+      "defectives": 127,
+      "fn": 0,
+      "catch_rate": 1.0,
+      "reject_only_recall": 0.6220472440944882,
+      "reject_true_positives": 79,
+      "defect_holds": 48,
+      "healthy_hold_rate": 0.1568627450980392,
+      "healthy_holds": 200,
+      "healthy_n": 1275,
+      "passes": 1075,
+      "holds": 248,
+      "early_rejects": 79,
+      "by_defect_type": {
+        "maverick": {
+          "n": 39,
+          "reject": 39,
+          "hold": 0,
+          "pass": 0,
+          "reject_recall": 1.0,
+          "catch_rate": 1.0
+        },
+        "latent_drift": {
+          "n": 50,
+          "reject": 28,
+          "hold": 22,
+          "pass": 0,
+          "reject_recall": 0.56,
+          "catch_rate": 1.0
+        },
+        "runaway": {
+          "n": 38,
+          "reject": 12,
+          "hold": 26,
+          "pass": 0,
+          "reject_recall": 0.3157894736842105,
+          "catch_rate": 1.0
+        }
+      }
+    }
+  ],
+  "summary": {
+    "n_seeds": 5,
+    "catch_rate": {
+      "mean": 0.9966577181208054,
+      "min": 0.99,
+      "max": 1.0
+    },
+    "reject_only_recall": {
+      "mean": 0.635800872502465,
+      "min": 0.5142857142857142,
+      "max": 0.74
+    },
+    "healthy_hold_rate": {
+      "mean": 0.12568334226116515,
+      "min": 0.10455563853622106,
+      "max": 0.1568627450980392
+    },
+    "false_negatives": {
+      "mean": 0.4,
+      "min": 0.0,
+      "max": 1.0
+    }
+  }
+}

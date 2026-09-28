@@ -216,7 +216,7 @@ async function main() {
             ["Optional histogram gradient-boosting blend", "Friedman, 2001 [13]"],
             ["FN_COST = 1000 vs FP_COST = 12; recall-first thresholds", "SIH26170 [1]; Elkan, 2001 [15]"],
             ["Twelve confirmed-defect ICs (2274 … 2713) as a real-world check", "SEMATECH / Nigh et al., ITC 1998 [7]"],
-            ["Training lots (4,945 parts, 24 lots)", "Synthetic generator — not a downloaded dataset"],
+            ["Training lots (5,145 parts, 25 lots including LOTSIH)", "Synthetic generator — not a downloaded dataset"],
           ],
           [4513, 4513],
         ),
@@ -284,7 +284,7 @@ async function main() {
         bullet("Mavericks — far from the lot centroid, still inside the datasheet box (the 10 / 45 / 50 µA sentence)."),
         bullet("Latent drift — normal at 0 h, anomalous slope, often still in-spec at 168 h."),
         bullet("Runaway — accelerating degradation that a static limit only catches late."),
-        p("Healthy parts follow a slow, nearly linear ageing law at 125 °C. Process corners (fast / nominal / slow) shift the whole lot centroid so a global Isolation Forest on raw microamps cannot be used — scores are lot-normalised first. Measurement noise is set to typical parametric-analyser repeatability. Default build: 24 lots, about 4,945 parts, split by lot (not by part) into train / val / test."),
+        p("Healthy parts follow a slow, nearly linear ageing law at 125 °C. Process corners (fast / nominal / slow) shift the whole lot centroid so a global Isolation Forest on raw microamps cannot be used — scores are lot-normalised first. Measurement noise is set to typical parametric-analyser repeatability. Default build: 24 generated lots plus the pinned LOTSIH textbook lot, 5,145 parts, split by lot (not by part) into train / val / test. Optional extras VTH, IDSAT, and reverse leakage are generated with the same defect modes."),
         h2("6.2 Real confirmed-defect ICs — SEMATECH [7]"),
         p("The twelve-row table pasted into the project (device IDs, pre-BI IDDQ, post-BI IDDQ at 6 / 78 / 150 h, and physical defect) is Table 1 of Nigh et al., International Test Conference 1998 [7]. AETHER maps those currents to microamps and scores each IC against a known-good reference lot (LOT01 healthy parts). Mapping notes live in scripts/predict_realtime_iddq.py."),
         table(
