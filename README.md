@@ -171,7 +171,7 @@ tests/                 PAT unit test + held-out recall smoke
 - The synthetic generator injects three modes: **mavericks** (in-spec, off-lot),
   **latent drift** (normal 0 h, bad slope), and **runaway** (quadratic aging).
   On the frozen test lots every maverick is REJECT (42/42). Latent drift is
-  18 REJECT and 15 HOLD. Runaway is 14 REJECT and 13 HOLD. None of these modes
+  18 REJECT and 15 HOLD. Runaway is 15 REJECT and 12 HOLD. None of these modes
   stays healthy through 24 h, so this 100% catch rate is not a late-onset result.
 - Replace `data/burnin_parts.csv` with a real ATE export (same column names) and
   re-run `python scripts/train.py`. No other code changes.
